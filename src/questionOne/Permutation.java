@@ -6,7 +6,9 @@ import java.util.HashMap;
 public class Permutation {
 
     /*
-     * Assumptions: All Characters fall within BMP, permutations are case-insensitive
+     * Assumptions: 1) All Characters fall within BMP,
+     *              2) permutations are case-insensitive,
+     *              3) each character occurs at most Integer.MAX_VALUE (2^32)
      * Space Complexity: O(1) (regardless of length of string the hashmap will have at most 2^16 elements)
      * Time Complexity: O(N) where N is the length of the strings
      */
@@ -17,11 +19,6 @@ public class Permutation {
         }else{
             HashMap<Character, Integer> occurrences = new HashMap<>();
 
-            /* firstStr.toLowerCase()
-                        .codePoints()
-                        .boxed()
-                        .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
-            * */
             for(Character c : firstStr.toLowerCase().toCharArray()){
                 occurrences.put(c ,1 + occurrences.getOrDefault(c,0));
             }

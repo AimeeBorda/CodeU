@@ -24,7 +24,7 @@ public class LinkedList<T> {
 
     /*
      * Space: O(1)
-     * Time: O(N)
+     * Time: O(N) where N is the number of elements in the list
      */
     public void addElement(T value){
         if(head == null){
@@ -62,6 +62,31 @@ public class LinkedList<T> {
             return res.getValue();
         }
 
+    }
+
+    /* removes all occurrences of value
+        Space: O(1)
+        Time: O(N) where N is the number of elements in the list
+     */
+    public int removeElement(T value){
+        Node<T> temp = head;
+        Node<T> prev = null;
+        int count = 0;
+
+        while(temp != null){
+            if(temp.getValue() == value){
+                count++;
+                if(prev ==null){
+                    head = temp.next;
+                }else{
+                    prev.next = temp.next;
+                }
+            }
+            prev = temp;
+            temp = temp.next;
+        }
+
+        return count;
     }
 
 
