@@ -50,11 +50,18 @@ public class BSTTreeTest {
     @Test
     public void testCommonAncestorExample(){
         BSTTree<Integer> tree = new BSTTree<>();
-        tree.insert(5);
-        tree.insert(7);
-        tree.insert(3);
-        tree.insert(2);
+        tree.insert(16);
         tree.insert(9);
-        assertEquals("prints \"9\" for traversing tree",9, (int)tree.commonAncestor(5,14));
+        tree.insert(18);
+        tree.insert(3);
+        tree.insert(14);
+        tree.insert(19);
+        tree.insert(1);
+        tree.insert(5);
+        assertEquals("prints \"9\" for traversing tree (5,14)",9, (int)tree.commonAncestor(5,14));
+        assertEquals("prints \"9\" for traversing tree (14,5)",9, (int)tree.commonAncestor(14,5));
+        assertEquals("prints \"3\" for traversing tree (5,3)",3, (int)tree.commonAncestor(5,3));
+        assertEquals("prints \"3\" for traversing tree (3,5)",3, (int)tree.commonAncestor(3,5));
+        assertNull("should return null for (15,5)", tree.commonAncestor(15,6));
     }
 }
