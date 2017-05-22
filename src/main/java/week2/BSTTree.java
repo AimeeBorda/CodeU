@@ -23,7 +23,7 @@ class BSTTree<T extends Comparable> {
 
     private Node<T> insert(T key, Node<T> element){
         if(element == null){
-            return new Node<>(key);
+            return new Node<T>(key);
         }else if(element.key.compareTo(key) < 0){
             element.right =  insert(key,element.right);
         }else if(element.key.compareTo(key) >0){

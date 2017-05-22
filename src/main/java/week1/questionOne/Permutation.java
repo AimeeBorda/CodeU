@@ -17,7 +17,7 @@ class Permutation {
         if(firstStr ==null || secondStr ==null || firstStr.length() != secondStr.length()){
             return false;
         }else{
-            HashMap<Character, Integer> occurrences = new HashMap<>();
+            HashMap<Character, Integer> occurrences = new HashMap<Character, Integer>();
 
             for(Character c : firstStr.toLowerCase().toCharArray()){
                 occurrences.put(c ,1 + occurrences.getOrDefault(c,0));

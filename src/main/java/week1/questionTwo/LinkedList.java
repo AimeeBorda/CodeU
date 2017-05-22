@@ -26,7 +26,7 @@ class LinkedList<T> {
             while(temp.next != null){
                 temp = temp.next;
             }
-            temp.next = new Node<>(value);
+            temp.next = new Node<T>(value);
         }
     }
 
