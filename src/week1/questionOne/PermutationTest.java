@@ -1,4 +1,4 @@
-package questionOne;
+package week1.questionOne;
 
 
 import org.junit.Before;
@@ -9,7 +9,7 @@ import static org.junit.Assert.assertTrue;
 
 public class PermutationTest {
 
-    Permutation p;
+    private Permutation p;
 
     @Before
     public void setUp(){

@@ -1,21 +1,13 @@
-package questionTwo;
+package week1.questionTwo;
 
-public class LinkedList<T> {
+class LinkedList<T> {
 
-    private class Node<T>{
-        private T value;
-        private Node<T> next;
+    private class Node<U>{
+        private U value;
+        private Node<U> next;
 
-        public Node(T value) {
+        Node(U value) {
             this.value = value;
-        }
-
-        public void setNext(Node<T> next){
-            this.next = next;
-        }
-
-        public T getValue(){
-            return this.value;
         }
     }
 
@@ -34,7 +26,7 @@ public class LinkedList<T> {
             while(temp.next != null){
                 temp = temp.next;
             }
-            temp.setNext(new Node<>(value));
+            temp.next = new Node<>(value);
         }
     }
 
@@ -59,7 +51,7 @@ public class LinkedList<T> {
                 res= res.next;
             }
 
-            return res.getValue();
+            return res.value;
         }
 
     }
@@ -74,7 +66,7 @@ public class LinkedList<T> {
         int count = 0;
 
         while(temp != null){
-            if(temp.getValue() == value){
+            if(temp.value == value){
                 count++;
                 if(prev ==null){
                     head = temp.next;

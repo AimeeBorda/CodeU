@@ -1,15 +1,15 @@
-package questionOne;
+package week1.questionOne;
 
 
 import java.util.HashMap;
 
-public class Permutation {
+class Permutation {
 
     /*
      * Assumptions: 1) All Characters fall within BMP,
      *              2) permutations are case-insensitive,
      *              3) each character occurs at most Integer.MAX_VALUE (2^32)
-     * Space Complexity: O(1) (regardless of length of string the hashmap will have at most 2^16 elements)
+     * Space Complexity: O(1) (regardless of length of string the hash map will have at most 2^16 elements)
      * Time Complexity: O(N) where N is the length of the strings
      */
     public boolean arePermutations(String firstStr, String secondStr){

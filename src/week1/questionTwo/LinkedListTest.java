@@ -1,4 +1,4 @@
-package questionTwo;
+package week1.questionTwo;
 
 import org.junit.Test;
 
