@@ -4,12 +4,13 @@ package week2;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class BSTTreeTest {
 
     @Test
     public void testPrintAncestorEmpty(){
-        BSTTree<Integer> tree = new BSTTree<Integer>();
+        BSTTree<Integer> tree = new BSTTree<>();
         assertEquals("prints empty string for null tree", "",tree.printAncestors(5));
         tree.insert(5);
         tree.insert(7);
@@ -25,7 +26,7 @@ public class BSTTreeTest {
 
     @Test
     public void testInsert(){
-        BSTTree<Integer> tree = new BSTTree<Integer>();
+        BSTTree<Integer> tree = new BSTTree<>();
         assertEquals("prints empty string for empty tree","", tree.traverse());
         tree.insert(5);
         tree.insert(7);
@@ -37,9 +38,9 @@ public class BSTTreeTest {
         assertEquals("prints \"2,3,5,7,9\" and ignore duplicate keys","2,3,5,7,9", tree.traverse());
     }
 
-   /* @Test
+    @Test
     public void testCommonAncestor(){
-        BSTTree<Integer> tree = new BSTTree<Integer>();
+        BSTTree<Integer> tree = new BSTTree<>();
         assertNull("should return null for empty tree",tree.commonAncestor(1,2));
         tree.insert(5);
         assertNull("should return null if one of the element does not exists (1,5)",tree.commonAncestor(1,5));
@@ -47,13 +48,13 @@ public class BSTTreeTest {
     }
 
     @Test
-    public void testInsertExample(){
-        BSTTree<Integer> tree = new BSTTree<Integer>();
+    public void testCommonAncestorExample(){
+        BSTTree<Integer> tree = new BSTTree<>();
         tree.insert(5);
         tree.insert(7);
         tree.insert(3);
         tree.insert(2);
         tree.insert(9);
         assertEquals("prints \"9\" for traversing tree",9, (int)tree.commonAncestor(5,14));
-    }*/
+    }
 }

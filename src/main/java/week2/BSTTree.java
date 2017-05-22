@@ -1,11 +1,11 @@
 package week2;
 
 
-class BSTTree<T extends Comparable> {
+class BSTTree<T extends Comparable<T>> {
 
-    private class Node<U extends Comparable>{
+    private class Node<U extends Comparable<U>>{
 
-        private U key;
+        private final U key;
         private Node<U> left;
         private Node<U> right;
 
@@ -23,10 +23,10 @@ class BSTTree<T extends Comparable> {
 
     private Node<T> insert(T key, Node<T> element){
         if(element == null){
-            return new Node<T>(key);
+            return new Node<>(key);
         }else if(element.key.compareTo(key) < 0){
             element.right =  insert(key,element.right);
-        }else if(element.key.compareTo(key) >0){
+        }else if(element.key.compareTo(key) > 0){
             element.left =  insert(key,element.left);
         }
         return element;

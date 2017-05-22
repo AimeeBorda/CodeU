@@ -3,7 +3,7 @@ package week1.questionTwo;
 class LinkedList<T> {
 
     private class Node<U>{
-        private U value;
+        private final U value;
         private Node<U> next;
 
         Node(U value) {
@@ -20,13 +20,13 @@ class LinkedList<T> {
      */
     public void addElement(T value){
         if(head == null){
-            head = new Node(value);
+            head = new Node<>(value);
         }else{
             Node temp = head;
             while(temp.next != null){
                 temp = temp.next;
             }
-            temp.next = new Node<T>(value);
+            temp.next = new Node<>(value);
         }
     }
 
