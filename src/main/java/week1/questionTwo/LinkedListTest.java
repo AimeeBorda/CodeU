@@ -1,9 +1,9 @@
 package week1.questionTwo;
 
-import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+
+import org.junit.Test;
 
 
 public class LinkedListTest {
@@ -59,19 +59,6 @@ public class LinkedListTest {
         assertNull("should return null for list = [5..15] and k = 16",list.getKthLastElement(16));
     }
 
-    @Test
-    public void testDeleteEmpty(){
-        LinkedList<Integer> list = new LinkedList<>();
-
-        assertEquals("should return 0 for list = []",0,list.removeElement(3));
-        for(int i  = 5; i <= 15; i++) {
-            list.addElement(i);
-        }
-        assertEquals("should return 0 for list = [5..15]",0,list.removeElement(3));
-        assertEquals("should return 1 for list = [5..15]",1,list.removeElement(5));
-        assertEquals("should return 1 for list = [6..15]",1,list.removeElement(15));
-        assertEquals("should return 1 for list = [6..14]",1,list.removeElement(7));
-    }
 
     @Test
     public void testDeleteAndKthElement(){
@@ -81,7 +68,5 @@ public class LinkedListTest {
         }
 
         assertEquals("should return 2 for list = [0..4]^3 and k = 3",2,(int)list.getKthLastElement(3));
-        assertEquals("should delete 2 occurrences of 3",2,list.removeElement(3));
-        assertEquals("should return 1 for list = [0124]^3 and k = 3",1,(int)list.getKthLastElement(3));
     }
 }
