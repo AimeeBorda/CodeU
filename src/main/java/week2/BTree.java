@@ -3,37 +3,12 @@ package week2;
 
 class BTree<T extends Comparable<T>> {
 
-  private class Node<U extends Comparable<U>> {
+  private Node<T> root;
 
-    private final U key;
-    private Node<U> left;
-    private Node<U> right;
-
-    Node(U key) {
-      this.key = key;
-    }
+  public BTree(Node<T> root) {
+    this.root = root;
   }
 
-
-  private Node<T> head;
-
-  /* Implemented recursively
-      Time: O(log N) where N is the number of elements in tree
-   */
-  public void insert(T key) {
-    head = insert(key, head);
-  }
-
-  private Node<T> insert(T key, Node<T> element) {
-    if (element == null) {
-      return new Node<>(key);
-    } else if (element.key.compareTo(key) < 0) {
-      element.right = insert(key, element.right);
-    } else if (element.key.compareTo(key) > 0) {
-      element.left = insert(key, element.left);
-    }
-    return element;
-  }
 
   /* Question 1: Given a Binary Tree and a key, write a function that prints all the ancestors
                  of the key in the given binary tree.
@@ -47,34 +22,35 @@ class BTree<T extends Comparable<T>> {
    */
   public String printAncestors(T key) {
     StringBuilder sb = new StringBuilder();
-    printAncestors(key, head, sb);
+    printAncestors(key, root, sb);
 
     return sb.toString();
   }
 
-  private void printAncestors(T key, Node<T> element, StringBuilder sb) {
+  private boolean printAncestors(T key, Node<T> element, StringBuilder sb) {
     if (element != null) {
-      int comparision = element.key.compareTo(key);
+      int comparision = element.getKey().compareTo(key);
 
-      if (comparision < 0) {
-        sb.insert(0, sb.length() > 0 ? "," : "");
-        sb.insert(0, element.key.toString());
-        printAncestors(key, element.right, sb);
-      } else if (comparision > 0) {
-        sb.insert(0, sb.length() > 0 ? "," : "");
-        sb.insert(0, element.key.toString());
-        printAncestors(key, element.left, sb);
+      if (comparision == 0) {
+        //signal back that element is found and hence the recursion path back are the ancestors
+        return true;
+      } else if (printAncestors(key, element.getLeft(), sb) || printAncestors(key,
+          element.getRight(), sb)) {
+        sb.append(sb.length() > 0 ? "," : "");
+        sb.append(element.getKey().toString());
+
+        return true;
       }
-    } else {
-      sb.delete(0, sb.length());
     }
+
+    return false;
   }
 
   /* Question 2: Design an algorithm and write code to find the lowest common ancestor of two nodes
                  in a binary tree. Avoid storing additional nodes in a data structure
 
      Overview: The solution is implemented recursively.
-               If both keys are on the LHS (less than element.key), then a lower ancestor must exists.
+               If both keys are on the LHS (less than element.getKey()), then a lower ancestor must exists.
                Once they are not on the same side
                (this includes: found one of the keys, one is on the LHS and the other on the RHS of element)
                then the current element is the lowest common ancestor provided that both keys are in the tree.
@@ -83,19 +59,20 @@ class BTree<T extends Comparable<T>> {
       Time: O(log N) where N is the number of elements in tree
    */
   public T commonAncestor(T key1, T key2) {
-    return commonAncestor(key1, key2, head);
+    return commonAncestor(key1, key2, root);
   }
 
   private T commonAncestor(T key1, T key2, Node<T> element) {
 
     if (element != null) {
-      int comparision1 = element.key.compareTo(key1);
-      int comparision2 = element.key.compareTo(key2);
+      int comparision1 = element.getKey().compareTo(key1);
+      int comparision2 = element.getKey().compareTo(key2);
 
       if (comparision1 == comparision2) {
-        return commonAncestor(key1, key2, comparision1 > 0 ? element.left : element.right);
+        return commonAncestor(key1, key2,
+            comparision1 > 0 ? element.getLeft() : element.getRight());
       } else if (findElement(key1, element) && findElement(key2, element)) {
-        return element.key;
+        return element.getKey();
       }
     }
     return null;
@@ -107,11 +84,33 @@ class BTree<T extends Comparable<T>> {
    */
   private boolean findElement(T key, Node<T> element) {
     if (element != null) {
-      int comparision = element.key.compareTo(key);
+      int comparision = element.getKey().compareTo(key);
 
-      return comparision == 0 || findElement(key, comparision < 0 ? element.right : element.left);
+      return comparision == 0 || findElement(key,
+          comparision < 0 ? element.getRight() : element.getLeft());
     }
 
     return false;
+  }
+
+  /* toString() is an inorder traversal of tree
+     Time: O(N) where N is the number of elements in tree
+   */
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    toString(root, sb);
+
+    return sb.toString();
+  }
+
+  private void toString(Node<T> element, StringBuilder sb) {
+    if (element != null) {
+      toString(element.getLeft(), sb);
+      sb.append(sb.length() > 0 ? ", " : "");
+      sb.append(element.getKey().toString());
+      toString(element.getRight(), sb);
+    }
   }
 }
