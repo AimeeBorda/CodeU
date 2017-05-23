@@ -36,7 +36,7 @@ class BTree<T extends Comparable<T>> {
         return true;
       } else if (printAncestors(key, element.getLeft(), sb) || printAncestors(key,
           element.getRight(), sb)) {
-        sb.append(sb.length() > 0 ? "," : "");
+        sb.append(sb.length() > 0 ? ", " : "");
         sb.append(element.getKey().toString());
 
         return true;
