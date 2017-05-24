@@ -3,9 +3,10 @@ package week2;
 
 class BTree<T extends Comparable<T>> {
 
+  private boolean bothFound = false;
   private Node<T> root;
 
-  public BTree(Node<T> root) {
+  BTree(Node<T> root) {
     this.root = root;
   }
 
@@ -15,12 +16,13 @@ class BTree<T extends Comparable<T>> {
                  Example: For the key 5 and the following tree we should print: 3, 9, 16.
 
      Overview: We define a private method to recursively parse through the tree searching for the
-              element. The method prints any node that are within the search path.
+              element. Once the value is found, the method returns true to signal up to call stack
+               that element is found.
 
-     Time: O(log N) where N is the number of elements in tree
+     Time: O(N) where N is the number of elements in tree
 
    */
-  public String printAncestors(T key) {
+  String printAncestors(T key) {
     StringBuilder sb = new StringBuilder();
     printAncestors(key, root, sb);
 
@@ -50,47 +52,42 @@ class BTree<T extends Comparable<T>> {
                  in a binary tree. Avoid storing additional nodes in a data structure
 
      Overview: The solution is implemented recursively.
-               If both keys are on the LHS (less than element.getKey()), then a lower ancestor must exists.
-               Once they are not on the same side
-               (this includes: found one of the keys, one is on the LHS and the other on the RHS of element)
-               then the current element is the lowest common ancestor provided that both keys are in the tree.
-               Thus the last step is to check if keys are in the tree through findElement.
 
-      Time: O(log N) where N is the number of elements in tree
+               Possible alternatives (omitted duals) considered in the recursive commonAncestor method:
+               1) None of the element are in the tree (else branch in commonAncestor)
+               2) One of the element is in the tree (bothFound is not set to true)
+               3) key1 is an ancestor of key2 => key2 (else if branch)
+               4) key1 is descendant on the left of some node and key2 is a descendant on thr right of the same node (if branch)
+
+      Time: O(N) where N is the number of elements in tree
    */
-  public T commonAncestor(T key1, T key2) {
-    return commonAncestor(key1, key2, root);
+  T commonAncestor(T key1, T key2) {
+    bothFound = false;
+    T res = commonAncestor(key1, key2, root);
+
+    return bothFound ? res : null;
   }
 
   private T commonAncestor(T key1, T key2, Node<T> element) {
 
     if (element != null) {
-      int comparision1 = element.getKey().compareTo(key1);
-      int comparision2 = element.getKey().compareTo(key2);
+      T left = commonAncestor(key1, key2, element.getLeft());
+      T right = commonAncestor(key1, key2, element.getRight());
 
-      if (comparision1 == comparision2) {
-        return commonAncestor(key1, key2,
-            comparision1 > 0 ? element.getLeft() : element.getRight());
-      } else if (findElement(key1, element) && findElement(key2, element)) {
+      boolean foundKey1 = element.getKey().compareTo(key1) == 0;
+      boolean foundKey2 = element.getKey().compareTo(key2) == 0;
+
+      if (left != null && right != null) {
+        bothFound = true;
         return element.getKey();
+      } else if (foundKey1 || foundKey2) {
+        bothFound = (left != null || right != null);
+        return element.getKey();
+      } else {
+        return left != null ? left : right;
       }
     }
     return null;
-  }
-
-  /* Returns true if key is a descendant of element (an element is a descendant of itself)
-
-     Time: O(log N) where N is the number of elements in tree
-   */
-  private boolean findElement(T key, Node<T> element) {
-    if (element != null) {
-      int comparision = element.getKey().compareTo(key);
-
-      return comparision == 0 || findElement(key,
-          comparision < 0 ? element.getRight() : element.getLeft());
-    }
-
-    return false;
   }
 
   /* toString() is an inorder traversal of tree
