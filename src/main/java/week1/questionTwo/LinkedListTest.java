@@ -25,14 +25,17 @@ public class LinkedListTest {
   public void testNegative() {
     LinkedList<Integer> list = new LinkedList<>();
     list.addElement(4);
+    list.addElement(54);
     assertNull("should return null for list = [4] and k = -1", list.getKthLastElement(-1));
+    assertNull("should return null for list = [4] and k = -1", list.getKthLastElement(-2));
   }
 
   @Test
   public void testLargerThanSize() {
     LinkedList<Integer> list = new LinkedList<>();
     list.addElement(4);
-    assertNull("should return null for list = [4] and k = 2", list.getKthLastElement(2));
+    list.addElement(5);
+    assertNull("should return null for list = [4] and k = 2", list.getKthLastElement(4));
   }
 
   @Test
@@ -64,14 +67,4 @@ public class LinkedListTest {
     assertNull("should return null for list = [5..15] and k = 16", list.getKthLastElement(16));
   }
 
-  @Test
-  public void testDeleteAndKthElement() {
-    LinkedList<Integer> list = new LinkedList<>();
-    for (int i = 5; i <= 15; i++) {
-      list.addElement(i % 5);
-    }
-
-    assertEquals("should return 2 for list = [0..4]^3 and k = 3", 2,
-        (int) list.getKthLastElement(3));
-  }
 }

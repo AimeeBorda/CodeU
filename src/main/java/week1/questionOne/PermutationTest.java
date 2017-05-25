@@ -34,7 +34,7 @@ public class PermutationTest {
   }
 
   @Test
-  public void testFalse() {
+  public void testNotMatchingString() {
     assertFalse("yellow is a permutation of wolley", p.arePermutations("hehehe", "wolleh"));
     assertFalse("yellow is a permutation of wolley", p.arePermutations("hellow", "hellll"));
 

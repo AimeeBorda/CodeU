@@ -16,7 +16,7 @@ class Permutation {
 
     if (firstStr == null || secondStr == null || firstStr.length() != secondStr.length()) {
       return false;
-    } else {
+    }
       HashMap<Character, Integer> occurrences = new HashMap<>();
 
       for (Character c : firstStr.toLowerCase().toCharArray()) {
@@ -24,12 +24,20 @@ class Permutation {
       }
 
       for (Character c : secondStr.toLowerCase().toCharArray()) {
-        if (occurrences.computeIfPresent(c, (k, v) -> v > 0 ? v - 1 : null) == null) {
+        Integer prevFreq = occurrences.put(c, occurrences.getOrDefault(c, 0) - 1);
+        if (prevFreq == null || prevFreq == 0) {
           return false;
         }
       }
 
+      /*This point is reached iff
+       * 1) strings are of the same length (otherwise return in if branch is executed)
+       * 2) All characters in the second string occur with the same frequency as the first string
+       *    (otherwise return in second for loop is executed)
+       *
+       * Both condition implies that the strings are permutations of each other
+       */
       return true;
     }
-  }
+
 }
