@@ -28,17 +28,18 @@ class Tree<T> {
   private boolean findAncestors(T key, Node<T> element, ArrayList<T> ancestors) {
     if (element == null) {
       return false;
-    } else if (element.getKey().equals(key)) {
-      //signal back that element is found and hence the recursion path back are the ancestors
-      ancestors.add(element.getKey());
-      return true;
-    } else if (findAncestors(key, element.getLeft(), ancestors) || findAncestors(key,
-        element.getRight(), ancestors)) {
-      ancestors.add(element.getKey());
-      return true;
-    } else {
-      return false;
     }
+
+    if (element.getKey().equals(key)
+        || findAncestors(key, element.getLeft(), ancestors)
+        || findAncestors(key, element.getRight(), ancestors)) {
+
+      // signals back that element is found and hence the recursion path back are the ancestors
+      ancestors.add(element.getKey());
+      return true;
+    }
+
+    return false;
   }
 
 
@@ -57,8 +58,8 @@ class Tree<T> {
     if (findAncestors(key1, root, key1Ancestor) && findAncestors(key2, root, key2Ancestor)) {
 
       key1Ancestor.retainAll(key2Ancestor);
-      return key1Ancestor.stream().findFirst();
 
+      return key1Ancestor.stream().findFirst();
     }
 
     return Optional.empty();

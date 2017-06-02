@@ -85,6 +85,12 @@ public class TreeTest {
         tree.commonAncestor(exampleTree, 15, 6));
   }
 
+  @Test
+  public void testCommonAncestorSameKey() {
+    assertEquals("prints \"5\" for traversing tree (5,5)", 5,
+        (int) tree.commonAncestor(exampleTree, 5, 5).get());
+  }
+
   private void setExampleTree() {
     exampleTree = new Node(
         new Node(
