@@ -24,16 +24,8 @@ public class Node<U> {
     return left;
   }
 
-  public void setLeft(Node<U> left) {
-    this.left = left;
-  }
-
   public Node<U> getRight() {
     return right;
-  }
-
-  public void setRight(Node<U> right) {
-    this.right = right;
   }
 
 }
