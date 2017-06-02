@@ -1,12 +1,12 @@
 package week2;
 
-public class Node<U extends Comparable<U>> {
+public class Node<U> {
 
   private final U key;
   private Node<U> left;
   private Node<U> right;
 
-  public Node(U key, Node<U> left, Node<U> right) {
+  public Node(Node<U> left, U key, Node<U> right) {
     this.key = key;
     this.left = left;
     this.right = right;
