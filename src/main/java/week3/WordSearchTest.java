@@ -2,6 +2,7 @@ package week3;
 
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.util.HashSet;
 import org.junit.Before;
@@ -9,7 +10,7 @@ import org.junit.Test;
 
 public class WordSearchTest {
 
-  WordSearch wordSearch;
+  private WordSearch wordSearch;
 
   @Before
   public void setUp() {
@@ -24,6 +25,8 @@ public class WordSearchTest {
         {'T', 'C', 'D'}
     };
     assertEquals(new HashSet<String>(), wordSearch.findWords(grid, d));
+    assertEquals(new HashSet<String>(), wordSearch.findWords(null, d));
+    assertEquals(new HashSet<String>(), wordSearch.findWords(grid, null));
   }
 
   @Test
@@ -88,5 +91,41 @@ public class WordSearchTest {
 
   }
 
+  @Test
+  public void testInitializeMapEmpty() {
+    assertNull(wordSearch.initializeMap(new Dictionary(new String[0]), null));
+    assertNull(wordSearch.initializeMap(null, new char[0][0]));
+  }
+
+  @Test
+  public void testInitializeMap() {
+    Dictionary d = new Dictionary(new String[]{"TATA"});
+    char[][] grid = new char[][]{
+        {'A', 'E', 'R'},
+        {'T', 'C', 'T'}
+    };
+
+    assertEquals(2, wordSearch.initializeMap(d, grid).get("T").size());
+    assertEquals(1, wordSearch.initializeMap(d, grid).size());
+
+  }
+
+  @Test
+  public void testAdjCellsEmpty() {
+    assertNull(wordSearch.getUnvisitedAdjCells(null));
+  }
+
+  @Test
+  public void testAdjCells() {
+    Dictionary d = new Dictionary(new String[]{"CAR", "CARD", "CART", "CAT"});
+    char[][] grid = new char[][]{
+        {'A', 'A', 'R'},
+        {'T', 'C', 'D'}
+    };
+
+    assertEquals(1, wordSearch.initializeMap(d, grid).get("C").size());
+    assertEquals(1, wordSearch.initializeMap(d, grid).size());
+
+  }
 
 }
