@@ -93,6 +93,8 @@ public class WordSearch {
    *  2) New cell has not been visited
    *  3) New cell is within the grid
    *  3) New cell is adjacent to the last cell in path c
+   *
+   *  N.B not test independently because of Path
    */
   List<Path> getUnvisitedAdjCells(Path c) {
 
@@ -104,8 +106,10 @@ public class WordSearch {
 
     for (int x = -1; x <= 1; x++) {
       for (int y = -1; y <= 1; y++) {
+
         int newX = c.x + x;
         int newY = c.y + y;
+
         if (newX >= 0 && newX < rows
             && newY >= 0 && newY < cols
             && !c.locs.get(newY * rows + newX)) {
