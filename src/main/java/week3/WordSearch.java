@@ -12,9 +12,6 @@ import java.util.stream.Collectors;
 
 public class WordSearch {
 
-
-  private int rows;
-  private int cols;
   /*
    * Given a grid of letters and a dictionary, find all the words from the dictionary that can be
    * formed in the grid.The rules for forming a word:
@@ -31,6 +28,8 @@ public class WordSearch {
    * words found.
    */
 
+  private int rows;
+  private int cols;
 
   /*
    * Iteratively try to find longer words
@@ -38,6 +37,19 @@ public class WordSearch {
    *
    * Iteration: while there are longer words found, try to append the next character to the valid
    * prefixes in the set.
+   *
+   * Time Complexity: Initialization + (number of iterations * cost of each iteration)
+   *                  O(|grid|*Words) + (O(|grid|) * O(|grid|*|grid| * |words|))
+    *                  O(|grid|^3*|words|)
+   *
+   *      where |grid| = rows*cols is the size of the grid and
+   *            |Words| = size of the dictionary / number of words in the dictionary
+   *
+   *  Intuitively, at worst the whole grid forms a word and thus we iterate over the while loop
+   *  |grid| times.
+   *
+   *  In each iteration, we can have all the grid being a prefix of some word, and the processing of
+   *  each path involves O(1) to get adjacent cells and O(|words|) to validate newPrefix
    */
   public Set<String> findWords(char[][] grid, Dictionary dictionary) {
 
@@ -51,19 +63,19 @@ public class WordSearch {
     while (prefixes.size() > 0) {
       Map<String, List<Path>> newPrefixes = new HashMap<>();
 
-      prefixes.forEach((p, paths) ->
+      prefixes.forEach((p, paths) ->                                //O(|grid|)
           newPrefixes.putAll(
               paths
-                  .stream()
-                  .flatMap(c -> getUnvisitedAdjCells(c).stream())
+                  .stream()                                         //O(|grid|)
+                  .flatMap(c -> getUnvisitedAdjCells(c).stream())   //O(1)
                   .filter(c -> {
-                    String newPrefix = p + grid[c.x][c.y];
+                    String newPrefix = p + grid[c.x][c.y];          // O(1)
 
-                    if (dictionary.isWord(newPrefix)) {
-                      words.add(newPrefix);
+                    if (dictionary.isWord(newPrefix)) {             //O(|words|)
+                      words.add(newPrefix);                         //O(1)
                     }
 
-                    return dictionary.isPrefix(newPrefix);
+                    return dictionary.isPrefix(newPrefix);          //O(|words|)
                   })
                   .collect(Collectors.groupingBy(c -> p + grid[c.x][c.y]))
           )
@@ -85,6 +97,10 @@ public class WordSearch {
    *  3) New cell is adjacent to the last cell in path c
    *
    *  N.B not test independently because of Path
+   *
+   *  Time Complexity : O(1) for loops do a constant number of iterations and
+   *  all operations either run in constant time (if, bitset check) or are negligible
+   *  (coordinates.add as arraylist will at most have size 8)
    */
   List<Path> getUnvisitedAdjCells(Path c) {
 
@@ -118,16 +134,20 @@ public class WordSearch {
    * Each entry
    * 1) the key is found in the grid and isPrefix to some word in the dictionary
    * 2) the entry all locations of the key
+   *
+   * Time Complexity: O(|grid|*|words|)
+    *   where |grid| is the size of your grid (rows*cols) / time complexity of the nested for loop
+    *         |words| is the size of your dictionary / time complexity of isPrefix
    */
   Map<String, List<Path>> initializeMap(Dictionary dict, char[][] grid) {
 
-    if (dict == null || grid == null || grid.length == 0) {
+    if (dict == null || grid == null) {
       return null;
     }
 
     rows = grid.length;
-    cols = grid[0].length;
-    
+    cols = grid.length > 0 ? grid[0].length : 0;
+
     Map<String, List<Path>> letters = new HashMap<>();
 
     //empty string is a prefix of all words by default
