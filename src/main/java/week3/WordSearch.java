@@ -75,16 +75,6 @@ public class WordSearch {
     return words;
   }
 
-  private void setRowsAndCols(char[][] grid) {
-    if (grid == null || grid.length == 0) {
-      return;
-    }
-
-    rows = grid.length;
-    cols = grid[0].length;
-  }
-
-
   /*
    * Method returns all valid adjacent coordinates of c w.r.t grid and current path
    *
@@ -131,12 +121,13 @@ public class WordSearch {
    */
   Map<String, List<Path>> initializeMap(Dictionary dict, char[][] grid) {
 
-    if (dict == null || grid == null) {
+    if (dict == null || grid == null || grid.length == 0) {
       return null;
     }
 
-    setRowsAndCols(grid);
-
+    rows = grid.length;
+    cols = grid[0].length;
+    
     Map<String, List<Path>> letters = new HashMap<>();
 
     //empty string is a prefix of all words by default
