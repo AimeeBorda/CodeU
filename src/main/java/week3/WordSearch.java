@@ -6,6 +6,7 @@ import java.util.BitSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Stack;
 
 public class WordSearch {
 
@@ -27,7 +28,7 @@ public class WordSearch {
 
   /*
    * Iteratively try to find longer words
-   * initializeSet = get all valid starting points on the grid (valid prefixes of length 1)
+   * initializeStack = get all valid starting points on the grid (valid prefixes of length 1)
    *
    * Iteration: while there are longer words found, try to append the next character to the valid
    * prefixes in the set.
@@ -52,24 +53,21 @@ public class WordSearch {
     }
 
     Set<String> words = new HashSet<>();
-    Set<Path> prefixes = initializeSet(dictionary, grid);
+    Stack<Path> prefixes = initializeStack(dictionary, grid);
 
-    while (prefixes.size() > 0) {
-      Set<Path> temp = new HashSet<>();
+    while (!prefixes.isEmpty()) {
+      Path p = prefixes.pop();
 
-      prefixes.forEach(p ->
-          getUnvisitedAdjCells(p, grid)
-              .forEach(c -> {
-                if (dictionary.isWord(c.word)) {
-                  words.add(c.word);
-                }
+      getUnvisitedAdjCells(p, grid)
+          .forEach(c -> {
+            if (dictionary.isWord(c.word)) {
+              words.add(c.word);
+            }
 
-                if (dictionary.isPrefix(c.word)) {
-                  temp.add(c);
-                }
-              }));
-
-      prefixes = temp;
+            if (dictionary.isPrefix(c.word)) {
+              prefixes.push(c);
+            }
+          });
     }
 
     return words;
@@ -135,12 +133,12 @@ public class WordSearch {
     *   where |grid| is the size of your grid (rows*cols) / time complexity of the nested for loop
     *         |words| is the size of your dictionary / time complexity of isPrefix
    */
-  Set<Path> initializeSet(Dictionary dict, char[][] grid) {
+  Stack<Path> initializeStack(Dictionary dict, char[][] grid) {
 
     int cols = grid[0].length;
     int rows = grid.length;
 
-    Set<Path> letters = new HashSet<>();
+    Stack<Path> letters = new Stack<>();
 
     //empty string is a prefix of all words by default
     for (int r = 0; r < rows; r++) {
@@ -148,7 +146,7 @@ public class WordSearch {
         String prefix = String.valueOf(grid[r][c]);
 
         if (dict.isPrefix(prefix)) {
-          letters.add(new Path(r, c, prefix, new BitSet(rows * cols), r * cols + c));
+          letters.push(new Path(r, c, prefix, new BitSet(rows * cols), r * cols + c));
         }
       }
     }

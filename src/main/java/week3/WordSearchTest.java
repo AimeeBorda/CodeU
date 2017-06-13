@@ -85,7 +85,7 @@ public class WordSearchTest {
         {'T', 'C', 'T'}
     };
 
-    assertEquals(2, wordSearch.initializeSet(d, grid).size());
+    assertEquals(2, wordSearch.initializeStack(d, grid).size());
   }
 
   @Test
