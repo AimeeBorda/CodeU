@@ -8,9 +8,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
-public class WordSearch {
-
-  /*
+/*
    * Given a grid of letters and a dictionary, find all the words from the dictionary that can be
    * formed in the grid.The rules for forming a word:
    *    ● You can start at any position.
@@ -25,26 +23,20 @@ public class WordSearch {
    * characters (of the native char data type), and the dictionary. You should return the set of all
    * words found.
    */
+public class WordSearch {
 
   /*
    * Iteratively try to find longer words
-   * initializeStack = get all valid starting points on the grid (valid prefixes of length 1)
-   *
-   * Iteration: while there are longer words found, try to append the next character to the valid
-   * prefixes in the set.
+   * 1. initializeStack = get all valid starting points on the grid (valid prefixes of length 1)
+   * 2. Iteration: while the stack is not empty, try to append the next character to a valid
+   * prefix in the stack.
    *
    * Time Complexity: Initialization + (number of iterations * cost of each iteration)
-   *                  O(|grid|*Words) + (O(|grid|) * O(|grid|*|grid| * |words|))
-    *                  O(|grid|^3*|words|)
+   *                  O(|grid|*|words|) + (O(|paths|) * O(|words|))
+    *                  O(|paths|*|words|)
    *
    *      where |grid| = rows*cols is the size of the grid and
    *            |Words| = size of the dictionary / number of words in the dictionary
-   *
-   *  Intuitively, at worst the whole grid forms a word and thus we iterate over the while loop
-   *  |grid| times.
-   *
-   *  In each iteration, we can have all the grid being a prefix of some word, and the processing of
-   *  each path involves O(1) to get adjacent cells and O(|words|) to validate newPrefix
    */
   public Set<String> findWords(char[][] grid, Dictionary dictionary) {
 
@@ -56,16 +48,18 @@ public class WordSearch {
     Stack<Path> prefixes = initializeStack(dictionary, grid);
 
     while (!prefixes.isEmpty()) {
-      Path p = prefixes.pop();
+      Path p = prefixes.pop();                       //O(1)
 
-      getUnvisitedAdjCells(p, grid)
-          .forEach(c -> {
-            if (dictionary.isWord(c.word)) {
-              words.add(c.word);
-            }
+      getUnvisitedAdjCells(p, grid)                  //O(1)
+          .forEach(c -> {                            //O(1) at worst it is 8 iterations
+            if (dictionary.isPrefix(c.word)) {       //O(|words|)
 
-            if (dictionary.isPrefix(c.word)) {
-              prefixes.push(c);
+              //by definition a word is a prefix as well
+              if (dictionary.isWord(c.word)) {      //O(|words|)
+                words.add(c.word);                  //O(1)
+              }
+
+              prefixes.push(c);                     //O(1)
             }
           });
     }
@@ -88,9 +82,9 @@ public class WordSearch {
    *  all operations either run in constant time (if, bitset check) or are negligible
    *  (coordinates.add as arraylist will at most have size 8)
    */
-  List<Path> getUnvisitedAdjCells(Path c, char[][] grid) {
+  List<Path> getUnvisitedAdjCells(Path path, char[][] grid) {
 
-    if (c == null) {
+    if (path == null) {
       return null;
     }
 
@@ -99,22 +93,16 @@ public class WordSearch {
     int rows = grid.length;
     int cols = grid[0].length;
 
-    for (int x = -1; x <= 1; x++) {
-      for (int y = -1; y <= 1; y++) {
+    for (int dr = -1; dr <= 1; dr++) {
+      for (int dc = -1; dc <= 1; dc++) {
 
-        int newX = c.x + x;
-        int newY = c.y + y;
+        int r = path.x + dr;
+        int c = path.y + dc;
+        int l = r * cols + c;
 
-        if (newX >= 0 && newX < rows
-            && newY >= 0 && newY < grid[0].length
-            && !c.locs.get(newX * cols + newY)) {
-
-          coordinates.add(new Path(
-              newX,
-              newY,
-              c.word + grid[newX][newY],
-              (BitSet) c.locs.clone(),
-              newX * cols + newY));
+        if (r >= 0 && r < rows && c >= 0 && c < cols && !path.locs.get(l)) {
+          coordinates.add(
+              new Path(r, c, path.word + grid[r][c], (BitSet) path.locs.clone(), l));
         }
 
       }
