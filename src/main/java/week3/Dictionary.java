@@ -5,31 +5,31 @@ import java.util.Arrays;
 
 public class Dictionary {
 
-  private String[] words;
+  private final String[] words;
 
   Dictionary(String[] words) {
-    this.words = words;
+    this.words = words != null ? words : new String[0];
   }
 
   /*
   * Time Complexity : O(N) where N is the number of words in your dictionary
   */
   public boolean isWord(String word) {
-    if (words == null || word == null) {
+    if (word == null) {
       return false;
     }
 
-    return Arrays.stream(words).filter(w -> w.equals(word)).findAny().isPresent();
+    return Arrays.stream(words).anyMatch(w -> w.equals(word));
   }
 
   /*
    * Time Complexity : O(N) where N is the number of words in your dictionary
    */
   public boolean isPrefix(String prefix) {
-    if (words == null || prefix == null) {
+    if (prefix == null) {
       return false;
     }
 
-    return Arrays.stream(words).filter(w -> w.indexOf(prefix) == 0).findAny().isPresent();
+    return Arrays.stream(words).anyMatch(w -> w.indexOf(prefix) == 0);
   }
 }

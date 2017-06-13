@@ -31,10 +31,19 @@ public class DictionaryTest {
   }
 
   @Test
+  public void testDictionaryInvalidParameter() {
+    Dictionary d = new Dictionary(new String[]{"CA"});
+
+    assertFalse(d.isPrefix(null));
+    assertFalse(d.isWord(null));
+  }
+
+  @Test
   public void testPrefixSuccessful() {
     Dictionary d = new Dictionary(new String[]{"CAR", "CARD", "CART", "CAT"});
 
     assertTrue(d.isPrefix("C"));
+    assertTrue(d.isPrefix(""));
     assertTrue(d.isPrefix("CA"));
     assertTrue(d.isPrefix("CAR"));
     assertTrue(d.isPrefix("CARD"));
@@ -53,6 +62,9 @@ public class DictionaryTest {
 
     assertTrue(d.isWord("CAR"));
     assertFalse(d.isWord("CA"));
+    assertFalse(d.isWord("A"));
+    assertFalse(d.isWord("CAD"));
+    assertFalse(d.isWord("CATS"));
   }
 
   @Test

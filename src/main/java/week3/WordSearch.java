@@ -3,12 +3,9 @@ package week3;
 
 import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class WordSearch {
 
@@ -28,12 +25,9 @@ public class WordSearch {
    * words found.
    */
 
-  private int rows;
-  private int cols;
-
   /*
    * Iteratively try to find longer words
-   * initializeMap = get all valid starting points on the grid (valid prefixes of length 1)
+   * initializeSet = get all valid starting points on the grid (valid prefixes of length 1)
    *
    * Iteration: while there are longer words found, try to append the next character to the valid
    * prefixes in the set.
@@ -53,35 +47,29 @@ public class WordSearch {
    */
   public Set<String> findWords(char[][] grid, Dictionary dictionary) {
 
-    if (grid == null || dictionary == null) {
+    if (grid == null || dictionary == null || grid.length == 0) {
       return new HashSet<>();
     }
 
     Set<String> words = new HashSet<>();
-    Map<String, List<Path>> prefixes = initializeMap(dictionary, grid);
+    Set<Path> prefixes = initializeSet(dictionary, grid);
 
     while (prefixes.size() > 0) {
-      Map<String, List<Path>> newPrefixes = new HashMap<>();
+      Set<Path> temp = new HashSet<>();
 
-      prefixes.forEach((p, paths) ->                                //O(|grid|)
-          newPrefixes.putAll(
-              paths
-                  .stream()                                         //O(|grid|)
-                  .flatMap(c -> getUnvisitedAdjCells(c).stream())   //O(1)
-                  .filter(c -> {
-                    String newPrefix = p + grid[c.x][c.y];          // O(1)
+      prefixes.forEach(p ->
+          getUnvisitedAdjCells(p, grid)
+              .forEach(c -> {
+                if (dictionary.isWord(c.word)) {
+                  words.add(c.word);
+                }
 
-                    if (dictionary.isWord(newPrefix)) {             //O(|words|)
-                      words.add(newPrefix);                         //O(1)
-                    }
+                if (dictionary.isPrefix(c.word)) {
+                  temp.add(c);
+                }
+              }));
 
-                    return dictionary.isPrefix(newPrefix);          //O(|words|)
-                  })
-                  .collect(Collectors.groupingBy(c -> p + grid[c.x][c.y]))
-          )
-      );
-
-      prefixes = newPrefixes;
+      prefixes = temp;
     }
 
     return words;
@@ -102,13 +90,16 @@ public class WordSearch {
    *  all operations either run in constant time (if, bitset check) or are negligible
    *  (coordinates.add as arraylist will at most have size 8)
    */
-  List<Path> getUnvisitedAdjCells(Path c) {
+  List<Path> getUnvisitedAdjCells(Path c, char[][] grid) {
 
     if (c == null) {
       return null;
     }
 
     List<Path> coordinates = new ArrayList<>();
+
+    int rows = grid.length;
+    int cols = grid[0].length;
 
     for (int x = -1; x <= 1; x++) {
       for (int y = -1; y <= 1; y++) {
@@ -117,10 +108,15 @@ public class WordSearch {
         int newY = c.y + y;
 
         if (newX >= 0 && newX < rows
-            && newY >= 0 && newY < cols
-            && !c.locs.get(newY * rows + newX)) {
+            && newY >= 0 && newY < grid[0].length
+            && !c.locs.get(newX * cols + newY)) {
 
-          coordinates.add(new Path(newX, newY, (BitSet) c.locs.clone()));
+          coordinates.add(new Path(
+              newX,
+              newY,
+              c.word + grid[newX][newY],
+              (BitSet) c.locs.clone(),
+              newX * cols + newY));
         }
 
       }
@@ -139,16 +135,12 @@ public class WordSearch {
     *   where |grid| is the size of your grid (rows*cols) / time complexity of the nested for loop
     *         |words| is the size of your dictionary / time complexity of isPrefix
    */
-  Map<String, List<Path>> initializeMap(Dictionary dict, char[][] grid) {
+  Set<Path> initializeSet(Dictionary dict, char[][] grid) {
 
-    if (dict == null || grid == null) {
-      return null;
-    }
+    int cols = grid[0].length;
+    int rows = grid.length;
 
-    rows = grid.length;
-    cols = grid.length > 0 ? grid[0].length : 0;
-
-    Map<String, List<Path>> letters = new HashMap<>();
+    Set<Path> letters = new HashSet<>();
 
     //empty string is a prefix of all words by default
     for (int r = 0; r < rows; r++) {
@@ -156,8 +148,7 @@ public class WordSearch {
         String prefix = String.valueOf(grid[r][c]);
 
         if (dict.isPrefix(prefix)) {
-          letters.putIfAbsent(prefix, new ArrayList<>());
-          letters.get(prefix).add(new Path(r, c));
+          letters.add(new Path(r, c, prefix, new BitSet(rows * cols), r * cols + c));
         }
       }
     }
@@ -165,31 +156,20 @@ public class WordSearch {
     return letters;
   }
 
-  private class Path {
+  private static class Path {
 
-    public int x;
-    public int y;
-    public BitSet locs = new BitSet(rows * cols);
+    int x;
+    int y;
+    String word;
+    BitSet locs;
 
-    public Path(int x, int y) {
-      this.x = x;
-      this.y = y;
-      this.locs.set(y * rows + x);
-    }
-
-    public Path(int x, int y, BitSet locs) {
+    Path(int x, int y, String word, BitSet locs, int l) {
       this.locs = locs;
       this.x = x;
       this.y = y;
-      this.locs.set(y * rows + x);
+      this.word = word;
+
+      this.locs.set(l);
     }
-
-
-    @Override
-    public String toString() {
-      return x + " " + y + " " + locs.toString();
-    }
-
-
   }
 }
