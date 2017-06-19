@@ -25,6 +25,28 @@ public class IslandCountTest {
   }
 
   @Test
+  public void testExample2() {
+    boolean[][] map = new boolean[][]{
+        {false, true, false, true},
+        {true, true, false, false},
+        {false, true, true, false},
+        {true, true, true, false}
+    };
+    assertEquals(2, IslandCount.countIslands(map));
+  }
+
+  @Test
+  public void testOtherExample() {
+    boolean[][] map = new boolean[][]{
+        {true, true, false, false, false},
+        {true, true, false, false, false},
+        {false, false, true, false, false},
+        {false, false, false, true, true}
+    };
+    assertEquals(3, IslandCount.countIslands(map));
+  }
+
+  @Test
   public void testUIslands() {
     boolean[][] map = new boolean[][]{
         {false, false, false, false},
