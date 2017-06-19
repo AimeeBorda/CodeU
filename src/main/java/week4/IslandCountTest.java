@@ -9,6 +9,8 @@ public class IslandCountTest {
 
   @Test
   public void testEmpty() {
+    assertEquals(0, IslandCount.countIslands(null));
+
     boolean[][] emptyMap = new boolean[][]{};
     assertEquals(0, IslandCount.countIslands(emptyMap));
   }
