@@ -38,6 +38,17 @@ public class IslandCountTest {
   }
 
   @Test
+  public void testIslandWithHole() {
+    boolean[][] map = new boolean[][]{
+        {false, true, true, true},
+        {false, true, false, true},
+        {false, true, true, true},
+        {false, false, false, false}
+    };
+    assertEquals(1, IslandCount.countIslands(map));
+  }
+
+  @Test
   public void testOtherExample() {
     boolean[][] map = new boolean[][]{
         {true, true, false, false, false},
