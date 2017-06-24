@@ -41,16 +41,18 @@ public class IslandCountUF {
       }
     }
 
-    //correct count of islands
+    //corrects count of islands that are connected with tile below or to its right only
     for (int r = 0; r < rows; r++) {
       for (int c = 0; c < cols; c++) {
         if (map[r][c]) {
-          if (r < rows - 1 && map[r + 1][c] && getRoot(uf, getIndex(r + 1, c, rows)) != getRoot(uf,
-              getIndex(r, c, rows))) {
+          if (r < rows - 1
+              && map[r + 1][c]
+              && uf[getIndex(r + 1, c, rows)] != uf[getIndex(r, c, rows)]) {
             merge(uf, getIndex(r, c, rows), getIndex(r + 1, c, rows));
             count--;
-          } else if (c < cols - 1 && map[r][c + 1]
-              && getRoot(uf, getIndex(r, c + 1, rows)) != getRoot(uf, getIndex(r, c, rows))) {
+          } else if (c < cols - 1
+              && map[r][c + 1]
+              && uf[getIndex(r, c + 1, rows)] != uf[getIndex(r, c, rows)]) {
             count--;
             merge(uf, getIndex(r, c, rows), getIndex(r, c + 1, rows));
           }
@@ -68,7 +70,4 @@ public class IslandCountUF {
     uf[dest] = uf[source];
   }
 
-  private static int getRoot(int[] uf, int index) {
-    return uf[index];
-  }
 }
