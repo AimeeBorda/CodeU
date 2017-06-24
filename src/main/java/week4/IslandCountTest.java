@@ -1,18 +1,40 @@
-package week4.flood;
+package week4;
 
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Arrays;
+import java.util.Collection;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
+import week4.flood.IslandCount;
+import week4.unionFind.IslandCountUF;
 
+@RunWith(value = Parameterized.class)
 public class IslandCountTest {
+
+  IslandCountI islandCount;
+
+  public IslandCountTest(IslandCountI islandCount) {
+    this.islandCount = islandCount;
+  }
+
+  @Parameters
+  public static Collection<Object[]> getParameters() {
+    return Arrays.asList(new Object[][]{
+        {new IslandCount()},
+        {new IslandCountUF()}
+    });
+  }
 
   @Test
   public void testEmpty() {
-    assertEquals(0, IslandCount.countIslands(null));
+    assertEquals(0, islandCount.countIslands(null));
 
     boolean[][] emptyMap = new boolean[][]{};
-    assertEquals(0, IslandCount.countIslands(emptyMap));
+    assertEquals(0, islandCount.countIslands(emptyMap));
   }
 
   @Test
@@ -23,7 +45,7 @@ public class IslandCountTest {
         {false, false, true, false},
         {false, false, true, false}
     };
-    assertEquals(3, IslandCount.countIslands(map));
+    assertEquals(3, islandCount.countIslands(map));
   }
 
   @Test
@@ -34,7 +56,7 @@ public class IslandCountTest {
         {false, true, true, false},
         {true, true, true, false}
     };
-    assertEquals(2, IslandCount.countIslands(map));
+    assertEquals(2, islandCount.countIslands(map));
   }
 
   @Test
@@ -45,7 +67,7 @@ public class IslandCountTest {
         {false, true, true, true},
         {false, false, false, false}
     };
-    assertEquals(1, IslandCount.countIslands(map));
+    assertEquals(1, islandCount.countIslands(map));
   }
 
   @Test
@@ -56,7 +78,7 @@ public class IslandCountTest {
         {false, false, true, false, false},
         {false, false, false, true, true}
     };
-    assertEquals(3, IslandCount.countIslands(map));
+    assertEquals(3, islandCount.countIslands(map));
   }
 
   @Test
@@ -67,7 +89,7 @@ public class IslandCountTest {
         {false, true, false, true},
         {false, false, false, false}
     };
-    assertEquals(1, IslandCount.countIslands(map));
+    assertEquals(1, islandCount.countIslands(map));
   }
 
   @Test
@@ -78,7 +100,7 @@ public class IslandCountTest {
         {false, true, false, false},
         {false, false, false, false}
     };
-    assertEquals(1, IslandCount.countIslands(map));
+    assertEquals(1, islandCount.countIslands(map));
   }
 
   @Test
@@ -87,7 +109,7 @@ public class IslandCountTest {
         {true, true, true},
         {true, true, true}
     };
-    assertEquals(1, IslandCount.countIslands(map));
+    assertEquals(1, islandCount.countIslands(map));
   }
 
   @Test
@@ -95,12 +117,12 @@ public class IslandCountTest {
     boolean[][] map = new boolean[][]{
         {true}
     };
-    assertEquals(1, IslandCount.countIslands(map));
+    assertEquals(1, islandCount.countIslands(map));
 
     map = new boolean[][]{
         {false}
     };
-    assertEquals(0, IslandCount.countIslands(map));
+    assertEquals(0, islandCount.countIslands(map));
   }
 
   @Test
@@ -108,7 +130,7 @@ public class IslandCountTest {
     boolean[][] map = new boolean[][]{
         {false, true, false, true, false}
     };
-    assertEquals(2, IslandCount.countIslands(map));
+    assertEquals(2, islandCount.countIslands(map));
 
     map = new boolean[][]{
         {false},
@@ -117,6 +139,6 @@ public class IslandCountTest {
         {false},
         {true}
     };
-    assertEquals(2, IslandCount.countIslands(map));
+    assertEquals(2, islandCount.countIslands(map));
   }
 }

@@ -2,8 +2,9 @@ package week4.unionFind;
 
 
 import java.util.Arrays;
+import week4.IslandCountI;
 
-public class IslandCountUF {
+public class IslandCountUF implements IslandCountI {
 
   /*
    * We go through each cell, if it is the top-left corner of an island,
@@ -14,7 +15,7 @@ public class IslandCountUF {
    * Time Complexity: O(nm) - pass through the map twice
    * Space Complexity: O(nm) - the size of the map = size of the UF DS
    */
-  public static int countIslandsUF(boolean[][] map) {
+  public int countIslands(boolean[][] map) {
 
     if (map == null || map.length == 0) {
       return 0;
@@ -62,11 +63,11 @@ public class IslandCountUF {
     return count;
   }
 
-  private static int getIndex(int r, int c, int rows) {
+  private int getIndex(int r, int c, int rows) {
     return r * rows + c;
   }
 
-  private static void merge(int[] uf, int dest, int source) {
+  private void merge(int[] uf, int dest, int source) {
     uf[dest] = uf[source];
   }
 

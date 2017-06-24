@@ -1,7 +1,9 @@
 package week4.flood;
 
 
-public class IslandCount {
+import week4.IslandCountI;
+
+public class IslandCount implements IslandCountI {
 
   /*
    * We go through each cell, if it is set (it is an island),
@@ -10,7 +12,7 @@ public class IslandCount {
    * Time Complexity: O(nm)
    * Space Complexity: O(1)
    */
-  public static int countIslands(boolean[][] map) {
+  public int countIslands(boolean[][] map) {
 
     if (map == null || map.length == 0) {
       return 0;
@@ -29,7 +31,7 @@ public class IslandCount {
   }
 
   /* sets all adjacent tiles of an island to false */
-  private static void grayOutIsland(boolean[][] map, int r, int c) {
+  private void grayOutIsland(boolean[][] map, int r, int c) {
     if (r >= 0 && r < map.length && c >= 0 && c < map[0].length && map[r][c]) {
       map[r][c] = false;
 
