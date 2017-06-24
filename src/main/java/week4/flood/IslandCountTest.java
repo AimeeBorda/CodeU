@@ -1,4 +1,4 @@
-package week4;
+package week4.flood;
 
 
 import static org.junit.Assert.assertEquals;
