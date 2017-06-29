@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
 import java.util.Collection;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -79,6 +80,30 @@ public class IslandCountTest {
         {false, false, false, true, true}
     };
     assertEquals(3, islandCount.countIslands(map));
+  }
+
+  @Test
+  public void testFShape() {
+    boolean[][] map = new boolean[][]{
+        {false, true, false, true, false},
+        {false, true, true, true, true},
+        {true, true, false, false, false},
+        {false, true, true, false, false}
+    };
+    assertEquals(1, islandCount.countIslands(map));
+  }
+
+  @Test
+  @Ignore
+  public void testCorners() {
+    boolean[][] map = new boolean[][]{
+        {true, true, false, true, true},
+        {true, false, false, false, true},
+        {false, false, false, false, false},
+        {true, false, false, false, true},
+        {true, true, false, true, true}
+    };
+    assertEquals(4, islandCount.countIslands(map));
   }
 
   @Test

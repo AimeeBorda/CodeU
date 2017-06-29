@@ -1,8 +1,8 @@
 package week4.flood;
 
 
-import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 import week4.IslandCountI;
 
 public class IslandCount implements IslandCountI {
@@ -12,7 +12,7 @@ public class IslandCount implements IslandCountI {
    * we increase the count and reset all the tiles in that island
    *
    * Time Complexity: O(nm)
-   * Space Complexity: O(1)
+   * Space Complexity: O(nm)
    */
   public int countIslands(boolean[][] map) {
 
@@ -20,12 +20,13 @@ public class IslandCount implements IslandCountI {
       return 0;
     }
 
+    boolean[][] visited = new boolean[map.length][map[0].length];
     int count = 0;
     for (int r = 0; r < map.length; r++) {
       for (int c = 0; c < map[r].length; c++) {
-        if (map[r][c]) {
+        if (map[r][c] && !visited[r][c]) {
           count++;
-          grayOutIsland(map, r, c);
+          grayOutIsland(map, visited, r, c);
         }
       }
     }
@@ -33,54 +34,56 @@ public class IslandCount implements IslandCountI {
   }
 
   /* sets all adjacent tiles of an island to false */
-  private void grayOutIsland(boolean[][] map, int r, int c) {
-    Set<Tile> tiles = new HashSet<>();
-    int[] dx = new int[]{0, 0, -1, 1};
-    int[] dy = new int[]{-1, 1, 0, 0};
-
+  private void grayOutIsland(boolean[][] map, boolean[][] visited, int r, int c) {
+    Set<Tile> tiles = new TreeSet<>();
     tiles.add(new Tile(r, c));
     while (!tiles.isEmpty()) {
-      Tile next = next(tiles);
-      if (getAndReset(map, next)) {
-        for (int i = 0; i < dx.length; i++) {
-          int newX = next.x + dx[i];
-          int newY = next.y + dy[i];
+      Tile next = tiles.iterator().next();
 
-          if (newX >= 0 && newX < map.length
-              && newY >= 0 && newY < map[0].length
-              && map[newX][newY]) {
-            tiles.add(new Tile(newX, newY));
-          }
+      if (map[next.r][next.c] && !visited[next.r][next.c]) {
+        visited[next.r][next.c] = true;
+
+        if (next.r > 0 && !visited[next.r - 1][next.c]) {
+          tiles.add(new Tile(next.r - 1, next.c));
+        }
+
+        if (next.r < map.length - 1 && !visited[next.r + 1][next.c]) {
+          tiles.add(new Tile(next.r + 1, next.c));
+        }
+
+        if (next.c > 0 && !visited[next.r][next.c - 1]) {
+          tiles.add(new Tile(next.r, next.c - 1));
+        }
+
+        if (next.c < map[r].length - 1 && !visited[next.r][next.c + 1]) {
+          tiles.add(new Tile(next.r, next.c + 1));
         }
       }
+
+      tiles.remove(next);
     }
   }
 
-  private Tile next(Set<Tile> tiles) {
-    Tile next = tiles.iterator().next();
-    tiles.remove(next);
-    return next;
-  }
+  private class Tile implements Comparable {
 
-  private boolean getAndReset(boolean[][] map, Tile next) {
-    boolean b = map[next.x][next.y];
-    map[next.x][next.y] = false;
-    return b;
-  }
+    int r;
+    int c;
 
-  private class Tile {
-
-    int x;
-    int y;
-
-    Tile(int x, int y) {
-      this.x = x;
-      this.y = y;
+    Tile(int r, int c) {
+      this.r = r;
+      this.c = c;
     }
 
     @Override
-    public boolean equals(Object o) {
-      return this.x == ((Tile) o).x && this.y == ((Tile) o).y;
+    public int compareTo(Object o) {
+      //assumption no nulls
+      Tile t1 = (Tile) o;
+
+      if (t1.r == this.r) {
+        return this.c - t1.c;
+      } else {
+        return this.r - t1.r;
+      }
     }
   }
 }
