@@ -94,7 +94,6 @@ public class IslandCountTest {
   }
 
   @Test
-  @Ignore
   public void testCorners() {
     boolean[][] map = new boolean[][]{
         {true, true, false, true, true},
@@ -104,6 +103,19 @@ public class IslandCountTest {
         {true, true, false, true, true}
     };
     assertEquals(4, islandCount.countIslands(map));
+  }
+
+  @Test
+  @Ignore
+  public void testOneCorner() {
+    boolean[][] map = new boolean[][]{
+        {false, true, false},
+        {true, true, true},
+        {false, false, true},
+        {false, true, true},
+        {false, true, true}
+    };
+    assertEquals(1, islandCount.countIslands(map));
   }
 
   @Test

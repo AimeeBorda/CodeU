@@ -32,9 +32,9 @@ public class IslandCountUF implements IslandCountI {
       for (int c = 0; c < cols; c++) {
         if (map[r][c]) {
           if (r > 0 && map[r - 1][c]) {
-            merge(uf, getIndex(r, c, rows), getIndex(r - 1, c, rows));
+            merge(uf, index(r, c, cols), index(r - 1, c, cols));
           } else if (c > 0 && map[r][c - 1]) {
-            merge(uf, getIndex(r, c, rows), getIndex(r, c - 1, rows));
+            merge(uf, index(r, c, cols), index(r, c - 1, cols));
           } else {
             count++;
           }
@@ -48,14 +48,14 @@ public class IslandCountUF implements IslandCountI {
         if (map[r][c]) {
           if (r < rows - 1
               && map[r + 1][c]
-              && uf[getIndex(r + 1, c, rows)] != uf[getIndex(r, c, rows)]) {
-            merge(uf, getIndex(r, c, rows), getIndex(r + 1, c, rows));
+              && uf[index(r + 1, c, cols)] != uf[index(r, c, cols)]) {
+            merge(uf, index(r, c, cols), index(r + 1, c, cols));
             count--;
           } else if (c < cols - 1
               && map[r][c + 1]
-              && uf[getIndex(r, c + 1, rows)] != uf[getIndex(r, c, rows)]) {
+              && uf[index(r, c + 1, cols)] != uf[index(r, c, cols)]) {
             count--;
-            merge(uf, getIndex(r, c, rows), getIndex(r, c + 1, rows));
+            merge(uf, index(r, c, cols), index(r, c + 1, cols));
           }
         }
       }
@@ -63,8 +63,8 @@ public class IslandCountUF implements IslandCountI {
     return count;
   }
 
-  private int getIndex(int r, int c, int rows) {
-    return r * rows + c;
+  private int index(int r, int c, int cols) {
+    return r * cols + c;
   }
 
   private void merge(int[] uf, int dest, int source) {
