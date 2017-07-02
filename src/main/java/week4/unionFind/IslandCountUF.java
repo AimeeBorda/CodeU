@@ -31,44 +31,59 @@ public class IslandCountUF implements IslandCountI {
     for (int r = 0; r < rows; r++) {
       for (int c = 0; c < cols; c++) {
         if (map[r][c]) {
-          if (r > 0 && map[r - 1][c]) {
-            merge(uf, index(r, c, cols), index(r - 1, c, cols));
-          } else if (c > 0 && map[r][c - 1]) {
-            merge(uf, index(r, c, cols), index(r, c - 1, cols));
-          } else {
+          int index = index(r, c, cols);
+          int root = root(uf, index);
+          boolean temp = root == index;
+
+          if (r > 0 && map[r - 1][c]
+              && root(uf, index(r - 1, c, cols)) != root) {
+            temp &= merge(uf, index(r - 1, c, cols), index);
+          }
+
+          if (r < rows - 1 && map[r + 1][c]
+              && root(uf, index(r + 1, c, cols)) != root) {
+            temp &= merge(uf, index, index(r + 1, c, cols));
+          }
+
+          if (c > 0 && map[r][c - 1]
+              && root(uf, index(r, c - 1, cols)) != root) {
+            temp &= merge(uf, index(r, c - 1, cols), index);
+          }
+
+          if (c < cols - 1 && map[r][c + 1]
+              && root(uf, index(r, c + 1, cols)) != root) {
+            temp &= merge(uf, index, index(r, c + 1, cols));
+          }
+
+          if (temp) {
             count++;
           }
         }
       }
     }
 
-    //corrects count of islands that are connected with tile below or to its right only
-    for (int r = 0; r < rows; r++) {
-      for (int c = 0; c < cols; c++) {
-        if (map[r][c]) {
-          if (r < rows - 1
-              && map[r + 1][c]
-              && uf[index(r + 1, c, cols)] != uf[index(r, c, cols)]) {
-            merge(uf, index(r, c, cols), index(r + 1, c, cols));
-            count--;
-          } else if (c < cols - 1
-              && map[r][c + 1]
-              && uf[index(r, c + 1, cols)] != uf[index(r, c, cols)]) {
-            count--;
-            merge(uf, index(r, c, cols), index(r, c + 1, cols));
-          }
-        }
-      }
-    }
     return count;
+  }
+
+  private int root(int[] uf, int index) {
+    while (index > 0 && uf[index] != index) {
+      index = uf[index];
+    }
+
+    return index;
   }
 
   private int index(int r, int c, int cols) {
     return r * cols + c;
   }
 
-  private void merge(int[] uf, int dest, int source) {
-    uf[dest] = uf[source];
+  private boolean merge(int[] uf, int source, int dest) {
+    int rs = root(uf, source);
+    int rd = root(uf, dest);
+
+    uf[rd] = uf[rs];
+
+    return rs == source && rd == dest;
   }
 
 }
