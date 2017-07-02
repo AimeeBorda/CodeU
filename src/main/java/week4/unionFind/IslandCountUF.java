@@ -2,19 +2,17 @@ package week4.unionFind;
 
 
 import java.util.Arrays;
-import java.util.HashSet;
 import week4.IslandCountI;
 
 public class IslandCountUF implements IslandCountI {
 
   /*
-   * We go through each cell, if it is the top-left corner of an island,
-   * we increase the count if it is part of an island, we merge it in the UF DS.
-   * We do a second pass through the map to correct over-estimated count
-   * (they are connected through right or bottom tile)
+   * We perform a union find, where for every set cell we try to merge it with neighbouring (set)
+   * cells. The UF is held as flat as possible to make retrieving the root more efficient. This made
+   * sense since we are going through the cells in a sequential order.
    *
-   * Time Complexity: O(nm) - pass through the map twice
-   * Space Complexity: O(nm) - the size of the map = size of the UF DS
+   * Time Complexity: O(nm) - iterate over the map 3 times to set array, main process, count roots
+   * Space Complexity: O(nm) - size of the UF
    */
   public int countIslands(boolean[][] map) {
 
@@ -26,66 +24,81 @@ public class IslandCountUF implements IslandCountI {
     int cols = map[0].length;
     int[] uf = new int[rows * cols];
 
-    Arrays.setAll(uf, i -> i);
-    HashSet<Integer> roots = new HashSet<>();
-    for (int r = 0; r < rows; r++) {
-      for (int c = 0; c < cols; c++) {
-        if (map[r][c]) {
+    Arrays.setAll(uf, i -> i); //O(n*m)
 
-          int index = index(r, c, cols);
-          int currentRoot = root(uf, index);
+    for (int r = 0; r < rows; r++) {                                               //O(n)
+      for (int c = 0; c < cols; c++) {                                             //O(m)
+        if (map[r][c]) {                                                           //O(1)
 
-          boolean firstRow = r == 0 || !map[r - 1][c];
-          boolean lastRow = r == rows - 1 || !map[r + 1][c];
-          boolean firstCol = c == 0 || !map[r][c - 1];
-          boolean lastCol = c == cols - 1 || !map[r][c + 1];
+          int index = index(r, c, cols);                                           //O(1)
+          int root = root(uf, index);                                              //O(1)
 
-          //singleton island
-          if (firstRow && lastRow && firstCol && lastCol) {
-            roots.add(index);
+          if (r > 0 && map[r - 1][c] && root(uf, index(r - 1, c, cols)) != root) { //O(1)
+            merge(uf, index(r - 1, c, cols), index);                               //O(1)
           }
 
-          if (!firstRow && root(uf, index(r - 1, c, cols)) != currentRoot) {
-            merge(uf, index(r - 1, c, cols), index, roots);
+          if (c > 0 && map[r][c - 1] && root(uf, index(r, c - 1, cols)) != root) {
+            merge(uf, index(r, c - 1, cols), index);
           }
 
-          if (!lastRow && root(uf, index(r + 1, c, cols)) != currentRoot) {
-            merge(uf, index, index(r + 1, c, cols), roots);
+          if (r < rows - 1 && map[r + 1][c] && root(uf, index(r + 1, c, cols)) != root) {
+            merge(uf, index, index(r + 1, c, cols));
           }
 
-          if (!firstCol && root(uf, index(r, c - 1, cols)) != currentRoot) {
-            merge(uf, index(r, c - 1, cols), index, roots);
+          if (c < cols - 1 && map[r][c + 1] && root(uf, index(r, c + 1, cols)) != root) {
+            merge(uf, index, index(r, c + 1, cols));
           }
-
-          if (!lastCol && root(uf, index(r, c + 1, cols)) != currentRoot) {
-            merge(uf, index, index(r, c + 1, cols), roots);
-          }
+        } else {
+          uf[index(r, c, cols)] = -1;
         }
       }
     }
 
-    return roots.size();
-  }
-
-  private int root(int[] uf, int index) {
-    while (index >= 0 && uf[index] != index) {
-      index = uf[index];
+    //counts roots/islands
+    int count = 0;
+    for (int i = 0; i < uf.length; i++) {                                          //O(n*m)
+      if (uf[i] == i) {
+        count++;
+      }
     }
 
-    return index;
+    return count;
   }
 
+  /*
+   * gets root of current cluster and flattens the structure
+   *
+   * Time Complexity: O(1) due to flatten
+   * Space Complexity: O(1)
+   */
+  private int root(int[] uf, int index) {
+    if (uf[index] != index) {
+      uf[index] = root(uf, uf[index]);
+    }
+
+    return uf[index];
+  }
+
+  /*
+   * converts the index from 2D map to 1D for uf
+   *
+   * Time Complexity: O(1)
+   * Space Complexity: O(1)
+   */
   private int index(int r, int c, int cols) {
     return r * cols + c;
   }
 
-  private void merge(int[] uf, int source, int dest, HashSet<Integer> roots) {
-    int rs = root(uf, source);
-    int rd = root(uf, dest);
+  /*
+   * Merges two clusters/islands
+   *
+   * Time Complexity: O(1)
+   * Space Complexity: O(1)
+   */
+  private void merge(int[] uf, int source, int dest) {
+    source = root(uf, source);
+    dest = root(uf, dest);
 
-    uf[rd] = rs;
-
-    roots.remove(rd);
-    roots.add(rs);
+    uf[dest] = source;
   }
 }
