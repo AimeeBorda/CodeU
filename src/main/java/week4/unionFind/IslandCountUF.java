@@ -28,24 +28,22 @@ public class IslandCountUF implements IslandCountI {
 
     for (int r = 0; r < rows; r++) {                                               //O(n)
       for (int c = 0; c < cols; c++) {                                             //O(m)
+        int index = index(r, c, cols);
+
         if (map[r][c]) {                                                           //O(1)
-
-          int index = index(r, c, cols);                                           //O(1)
-          int root = root(uf, index);                                              //O(1)
-
-          if (r > 0 && map[r - 1][c] && root(uf, index(r - 1, c, cols)) != root) { //O(1)
+          if (r > 0 && map[r - 1][c]) { //O(1)
             merge(uf, index(r - 1, c, cols), index);                               //O(1)
           }
 
-          if (c > 0 && map[r][c - 1] && root(uf, index(r, c - 1, cols)) != root) {
+          if (c > 0 && map[r][c - 1]) {
             merge(uf, index(r, c - 1, cols), index);
           }
 
-          if (r < rows - 1 && map[r + 1][c] && root(uf, index(r + 1, c, cols)) != root) {
+          if (r < rows - 1 && map[r + 1][c]) {
             merge(uf, index, index(r + 1, c, cols));
           }
 
-          if (c < cols - 1 && map[r][c + 1] && root(uf, index(r, c + 1, cols)) != root) {
+          if (c < cols - 1 && map[r][c + 1]) {
             merge(uf, index, index(r, c + 1, cols));
           }
         } else {
@@ -96,9 +94,6 @@ public class IslandCountUF implements IslandCountI {
    * Space Complexity: O(1)
    */
   private void merge(int[] uf, int source, int dest) {
-    source = root(uf, source);
-    dest = root(uf, dest);
-
-    uf[dest] = source;
+    uf[root(uf, dest)] = root(uf, source);
   }
 }
