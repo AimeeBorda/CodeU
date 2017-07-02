@@ -105,13 +105,13 @@ public class IslandCountTest {
   }
 
   @Test
-  public void testOneCorner() {
+  public void testLargeUShape() {
     boolean[][] map = new boolean[][]{
-        {false, true, false},
         {true, true, true},
         {false, false, true},
-        {false, true, true},
-        {false, true, true}
+        {false, false, true},
+        {true, true, true},
+        {false, false, false}
     };
     assertEquals(1, islandCount.countIslands(map));
   }

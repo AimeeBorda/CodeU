@@ -2,6 +2,7 @@ package week4.unionFind;
 
 
 import java.util.Arrays;
+import java.util.HashSet;
 import week4.IslandCountI;
 
 public class IslandCountUF implements IslandCountI {
@@ -21,52 +22,53 @@ public class IslandCountUF implements IslandCountI {
       return 0;
     }
 
-    int count = 0;
     int rows = map.length;
     int cols = map[0].length;
     int[] uf = new int[rows * cols];
 
     Arrays.setAll(uf, i -> i);
-
+    HashSet<Integer> roots = new HashSet<>();
     for (int r = 0; r < rows; r++) {
       for (int c = 0; c < cols; c++) {
         if (map[r][c]) {
+
           int index = index(r, c, cols);
-          int root = root(uf, index);
-          boolean temp = root == index;
+          int currentRoot = root(uf, index);
 
-          if (r > 0 && map[r - 1][c]
-              && root(uf, index(r - 1, c, cols)) != root) {
-            temp &= merge(uf, index(r - 1, c, cols), index);
+          boolean firstRow = r == 0 || !map[r - 1][c];
+          boolean lastRow = r == rows - 1 || !map[r + 1][c];
+          boolean firstCol = c == 0 || !map[r][c - 1];
+          boolean lastCol = c == cols - 1 || !map[r][c + 1];
+
+          //singleton island
+          if (firstRow && lastRow && firstCol && lastCol) {
+            roots.add(index);
           }
 
-          if (r < rows - 1 && map[r + 1][c]
-              && root(uf, index(r + 1, c, cols)) != root) {
-            temp &= merge(uf, index, index(r + 1, c, cols));
+          if (!firstRow && root(uf, index(r - 1, c, cols)) != currentRoot) {
+            merge(uf, index(r - 1, c, cols), index, roots);
           }
 
-          if (c > 0 && map[r][c - 1]
-              && root(uf, index(r, c - 1, cols)) != root) {
-            temp &= merge(uf, index(r, c - 1, cols), index);
+          if (!lastRow && root(uf, index(r + 1, c, cols)) != currentRoot) {
+            merge(uf, index, index(r + 1, c, cols), roots);
           }
 
-          if (c < cols - 1 && map[r][c + 1]
-              && root(uf, index(r, c + 1, cols)) != root) {
-            temp &= merge(uf, index, index(r, c + 1, cols));
+          if (!firstCol && root(uf, index(r, c - 1, cols)) != currentRoot) {
+            merge(uf, index(r, c - 1, cols), index, roots);
           }
 
-          if (temp) {
-            count++;
+          if (!lastCol && root(uf, index(r, c + 1, cols)) != currentRoot) {
+            merge(uf, index, index(r, c + 1, cols), roots);
           }
         }
       }
     }
 
-    return count;
+    return roots.size();
   }
 
   private int root(int[] uf, int index) {
-    while (index > 0 && uf[index] != index) {
+    while (index >= 0 && uf[index] != index) {
       index = uf[index];
     }
 
@@ -77,13 +79,13 @@ public class IslandCountUF implements IslandCountI {
     return r * cols + c;
   }
 
-  private boolean merge(int[] uf, int source, int dest) {
+  private void merge(int[] uf, int source, int dest, HashSet<Integer> roots) {
     int rs = root(uf, source);
     int rd = root(uf, dest);
 
-    uf[rd] = uf[rs];
+    uf[rd] = rs;
 
-    return rs == source && rd == dest;
+    roots.remove(rd);
+    roots.add(rs);
   }
-
 }
