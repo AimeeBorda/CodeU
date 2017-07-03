@@ -13,38 +13,44 @@ public class AlphabetFinder {
       return new LinkedList<>();
     }
 
-    List<Character> alphabet = new LinkedList<>();
     List<List<String>> suffixes = new LinkedList<>();
+    List<List<Character>> ordering = new LinkedList<>();
+
     suffixes.add(Arrays.asList(words));
 
     while (!suffixes.isEmpty()) {
-      List<String> suffix = suffixes.remove(0);
-      List<String> temp = new LinkedList<>();
-      List<Character> firstChar = new LinkedList<>();
+      LinkedList<Character> tempOrdering = new LinkedList<>();
+      LinkedList<String> tempSuffix = new LinkedList<>();
 
-      for (String s : suffix) {
-        if (!firstChar.contains(s.charAt(0))) {
-          firstChar.add(s.charAt(0));
-          if (temp.size() > 1) {
-            suffixes.add(temp);
-          }
-          temp.clear();
+      for (String s : suffixes.remove(0)) {
+        if (!tempOrdering.contains(s.charAt(0))) {
+          tempOrdering.add(s.charAt(0));
         }
 
         if (s.length() > 1) {
-          temp.add(s.substring(1));
+          tempSuffix.add(s.substring(1));
         }
       }
 
-      if (firstChar.size() > 1) {
-        merge(alphabet, firstChar);
+      tempSuffix.removeIf(s -> s.length() <= 1);
+      if (tempSuffix.size() > 1) {
+        suffixes.add(tempSuffix);
       }
+
+      if (tempOrdering.size() > 1) {
+        ordering.add(tempOrdering);
+      }
+    }
+
+    return getAlphabet(ordering);
+  }
+
+  private static List<Character> getAlphabet(List<List<Character>> ordering) {
+    List<Character> alphabet = new LinkedList<>();
+
+    while (!ordering.isEmpty()) {
 
     }
     return alphabet;
-  }
-
-  private static void merge(List<Character> alphabet, List<Character> ordering) {
-
   }
 }

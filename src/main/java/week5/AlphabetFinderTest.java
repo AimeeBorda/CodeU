@@ -35,7 +35,13 @@ public class AlphabetFinderTest {
   }
 
   @Test
-  public void testCases() {
+  public void testCasing() {
+    assertThat(AlphabetFinder.findAlphabet(new String[]{"ART", "RAT", "CAT", "CAR"}),
+        is(Arrays.asList('A', 'T', 'R', 'C')));
+  }
+
+  @Test
+  public void testOrderPriority() {
     assertThat(AlphabetFinder.findAlphabet(new String[]{"ART", "RAT", "CAT", "CAR"}),
         is(Arrays.asList('A', 'T', 'R', 'C')));
   }
