@@ -36,6 +36,15 @@ public class AlphabetFinder {
     return getAlphabet(getPartialOrderLists(words));
   }
 
+  /*
+   * Iteratively takes set of word lists and for each list get the ordering
+   * and a set of word list that rise up after dropping the first character.
+   * The alogrithm starts with a singleton set containing the complete list of words
+   *
+   * We remove empty list within the loop to speed up.
+   *
+   * Time Complexity: O(n) where n is the number of words
+   */
   private static List<List<Character>> getPartialOrderLists(String[] words) {
     List<List<Character>> res = new ArrayList<>();
 
@@ -44,11 +53,11 @@ public class AlphabetFinder {
 
     queue.add(Arrays.asList(words));
 
-    while (!queue.isEmpty()) {
-      List<String> suffixes = queue.poll();
+    while (!queue.isEmpty()) { //number of ordering ~ number of characters in words
+      List<String> suffixes = queue.poll(); //O(1)
 
-      res.add(getOrdering(suffixes));
-      queue.addAll(getSetsOfSuffixes(suffixes));
+      res.add(getOrdering(suffixes)); //O(n) where n is number of suffixes
+      queue.addAll(getSetsOfSuffixes(suffixes)); // O(n) where n is the number suffixes
 
       queue.removeIf(List::isEmpty);
     }
@@ -59,7 +68,7 @@ public class AlphabetFinder {
    * retrieve the partial order from a list of words by getting all the distinct
    * first character e.g [ART, RAT,RAD, CAT] returns [A,R,C]
    *
-   * Time Complexity: O(n)
+   * Time Complexity: O(n) where n is the number of words
    */
   private static List<Character> getOrdering(List<String> words) {
     return words
@@ -75,7 +84,7 @@ public class AlphabetFinder {
    * after the first letter
    * e.g [ART, RAT,RAD, CAT] returns [[RT],[AT,AD],[AT]
    *
-   * Time Complexity: O(n)
+   * Time Complexity: O(n) where n is the number of words
    */
   private static Collection<List<String>> getSetsOfSuffixes(List<String> words) {
     return words

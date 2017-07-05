@@ -40,8 +40,8 @@ public class AlphabetFinderTest {
   @Test
   public void testMergeCorrectionB() {
     //partial order refines alphabet - there is a letter that should be moved backward
-    assertThat(AlphabetFinder.findAlphabet(new String[]{"AC", "DR", "TAR", "TAC"}),
-        is(Arrays.asList('A', 'D', 'T', 'R', 'C')));
+    assertThat(AlphabetFinder.findAlphabet(new String[]{"AC", "DR", "D", "TAR", "TAC", "TAD"}),
+        is(Arrays.asList('A', 'R', 'C', 'D', 'T')));
   }
 
   @Test
