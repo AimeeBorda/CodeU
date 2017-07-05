@@ -18,25 +18,35 @@ public class AlphabetFinderTest {
 
   @Test
   public void testExample() {
+    //test example that was given
     assertThat(AlphabetFinder.findAlphabet(new String[]{"ART", "RAT", "CAT", "CAR"}),
         is(Arrays.asList('A', 'T', 'R', 'C')));
   }
 
   @Test
   public void testContradiction() {
+    //does the program crash on contradiction
     assertThat(AlphabetFinder.findAlphabet(new String[]{"ART", "RAT", "ARC", "CAT", "CAR"}),
         is(Arrays.asList('A', 'T', 'R', 'C')));
   }
 
   @Test
   public void testMergeCorrection() {
+    //partial order refines alphabet - there is a letter that should be moved forward
     assertThat(AlphabetFinder.findAlphabet(new String[]{"ART", "RAT", "CTT", "CTA", "CRA"}),
         is(Arrays.asList('T', 'A', 'R', 'C')));
   }
 
+  @Test
+  public void testMergeCorrectionB() {
+    //partial order refines alphabet - there is a letter that should be moved backward
+    assertThat(AlphabetFinder.findAlphabet(new String[]{"AC", "DR", "TAR", "TAC"}),
+        is(Arrays.asList('A', 'D', 'T', 'R', 'C')));
+  }
 
   @Test
   public void testAmbiguous() {
+    //partial order is more ambigious than alphabet
     assertThat(AlphabetFinder.findAlphabet(new String[]{"ART", "RAT", "CAT", "CAA", "DT", "DC"}),
         is(Arrays.asList('T', 'A', 'R', 'C', 'D')));
   }
@@ -48,19 +58,16 @@ public class AlphabetFinderTest {
   }
 
   @Test
-  public void testOrderPriority() {
-    assertThat(AlphabetFinder.findAlphabet(new String[]{"ART", "RAT", "CAT", "CAR"}),
+  public void testDuplication() {
+    //duplicate words
+    assertThat(AlphabetFinder.findAlphabet(new String[]{"ART", "RAT", "RA", "RAT", "CAT", "CAR"}),
         is(Arrays.asList('A', 'T', 'R', 'C')));
   }
 
   @Test
-  public void testDuplication() {
-    assertThat(AlphabetFinder.findAlphabet(new String[]{"ART", "RAT", "RAD", "RAT", "CAT", "CAR"}),
-        is(Arrays.asList('A', 'T', 'R', 'C', 'D')));
-  }
-
-  @Test
   public void testAllLetter() {
+
+    //making sure all letters are included in the alphabet
     assertThat(AlphabetFinder.findAlphabet(new String[]{"ART", "RAT", "CAT", "CAR", "CAD"}),
         is(Arrays.asList('A', 'T', 'R', 'C', 'D')));
   }
@@ -72,5 +79,24 @@ public class AlphabetFinderTest {
     assertThat(
         AlphabetFinder.findAlphabet(new String[]{"ARTS", "RATTA", "CAT", "CAR", "CADDDDDDDDDD"}),
         is(Arrays.asList('A', 'T', 'R', 'C', 'D', 'S')));
+  }
+
+  @Test
+  public void testMultipleCorrections() {
+    //in this example 'D' is before 'S' because 'D' is encountered on the third
+    //character of the word whereas 'S' on the fourth
+    assertThat(
+        AlphabetFinder.findAlphabet(new String[]{"ARTS", "RATTA", "CAT", "CAR", "CADDDDDDDDDD"}),
+        is(Arrays.asList('A', 'T', 'R', 'C', 'D', 'S')));
+  }
+
+  @Test
+  public void testMultipleCorrections2() {
+    //multiple letters needs to move forward due to a partial order
+    // e.g. alphabet = [ A, R, D, T, C, B] and po = [C, B, R] -> alphabet to [A, C, B, R, D, T]
+    assertThat(
+        AlphabetFinder
+            .findAlphabet(new String[]{"ART", "RB", "RD", "RT", "TC", "T", "SC", "SB", "SA"}),
+        is(Arrays.asList('C', 'B', 'A', 'R', 'D', 'T', 'S')));
   }
 }
