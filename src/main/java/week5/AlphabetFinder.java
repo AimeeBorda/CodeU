@@ -1,6 +1,8 @@
 package week5;
 
 
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.mapping;
 import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
@@ -8,17 +10,19 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Queue;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class AlphabetFinder {
 
   /*
-   * We first get all the sets of ordering from the words (in ordering)
-   * e.g. [ART, RAT, CAR, CAT] -> [[A,R,C],[R,T]]  (corrected to include single letters)
+   * Two main steps:
+   * 1) We first get all the partially ordered lists of characters from the words
+   * e.g. [ART, RAT, CAR, CAT] -> [[A,R,C],[R],[A],[A],[A],[T],[T],[R,T]]
+   * It will include duplicates and single letters e.g. for ART we have [[R],[T]]
+   * to make sure all letters are included
    *
-   * we then call getAlphabet to infer alphabet from grouping
+   * 2) We pass the ordering to getAlphabet that infers the alphabet from the list of words
    *
    * Time Complexity: O(
    * Space Complexity: O(
@@ -29,27 +33,36 @@ public class AlphabetFinder {
       return new ArrayList<>();
     }
 
-    //get list of all ordering from words
-    List<List<Character>> ordering = new ArrayList<>();
+    return getAlphabet(getPartialOrderLists(words));
+  }
+
+  private static List<List<Character>> getPartialOrderLists(String[] words) {
+    List<List<Character>> res = new ArrayList<>();
+
+    //contain a queue of (sorted) word lists yet to be processed
     Queue<List<String>> queue = new LinkedList<>();
 
-    //start with all
     queue.add(Arrays.asList(words));
 
     while (!queue.isEmpty()) {
       List<String> suffixes = queue.poll();
 
-      ordering.add(getOrdering(suffixes));
+      res.add(getOrdering(suffixes));
       queue.addAll(getSetsOfSuffixes(suffixes));
 
-      queue.removeIf(q -> q.isEmpty());
+      queue.removeIf(List::isEmpty);
     }
-
-    return getAlphabet(ordering);
+    return res;
   }
 
-  private static List<Character> getOrdering(List<String> suffixes) {
-    return suffixes
+  /*
+   * retrieve the partial order from a list of words by getting all the distinct
+   * first character e.g [ART, RAT,RAD, CAT] returns [A,R,C]
+   *
+   * Time Complexity: O(n)
+   */
+  private static List<Character> getOrdering(List<String> words) {
+    return words
         .stream()
         .filter(s -> s.length() > 0)
         .map(s -> s.charAt(0))
@@ -57,62 +70,69 @@ public class AlphabetFinder {
         .collect(toList());
   }
 
-  private static Collection<List<String>> getSetsOfSuffixes(List<String> suffixes) {
-    Collection<List<String>> values = suffixes
+  /*
+   * splits a list of words into bags of word list that can contain ordering information
+   * after the first letter
+   * e.g [ART, RAT,RAD, CAT] returns [[RT],[AT,AD],[AT]
+   *
+   * Time Complexity: O(n)
+   */
+  private static Collection<List<String>> getSetsOfSuffixes(List<String> words) {
+    return words
         .stream()
         .filter(s -> s.length() > 1)
-        .collect(Collectors.groupingBy(s -> s.charAt(0)))
-        .values();
-
-    values.forEach(v -> v.replaceAll(s -> s.substring(1)));
-
-    return values;
-  }
-
-  private static List<Character> getAlphabet(List<List<Character>> ordering) {
-    if (ordering == null || ordering.isEmpty()) {
-      return new ArrayList<>();
-    }
-
-    List<Character> alphabet = new LinkedList<>(ordering.remove(0));
-
-    ordering
+        .collect(groupingBy(s -> s.charAt(0), mapping(s -> s.substring(1), toList())))
+        .values()
         .stream()
         .distinct()
-        .forEach(dep -> {
-          for (int i = 0; i < dep.size(); i++) {
+        .collect(toList());
+  }
 
-            int next = getNextIndex(alphabet, dep, i + 1);
-            int prev = getPreviousIndex(alphabet, dep, i - 1);
+  /*
+   * Given a list of partial orders, the method infers the alphabet by iteratively
+   * merging partial-orders
+   *
+   * Time Complexity: O(n) where n is the number of partial-order
+   */
+  private static List<Character> getAlphabet(List<List<Character>> orders) {
 
-            if (next == -1 && prev == -1 && !alphabet.contains(dep.get(i))) {
-              alphabet.add(dep.get(i));
-            } else if (next > prev) {
-              alphabet.remove(dep.get(i));
-              alphabet.add(Math.max(prev + 1, next), dep.get(i));
-            }
-          }
-        });
+    return orders
+        .stream()
+        .distinct()
+        .reduce(AlphabetFinder::merge)
+        .orElse(new ArrayList<>());
+  }
+
+  /*
+  * Refines an alphabet according to a partial-order.
+  * 1) We start from the last letter. This guarantee that ambiguous letters
+  * are inserted at the last valid position (the letter T from the example)
+  * 2) We keep consistent the largest valid index up to which the letters in dep can be inserted
+  *     e.g., for alphabet [A, R, T] and dep [T, R] index should be 1 for T as it should not come after R
+  *     a) if letter is not in alphabet we insert it in index (which will be largest valid position)
+  *     b) if letter is in alphabet but after index, it mean we found a more accurate ordering and
+  *        the position of the letter should be corrected.
+  *
+  * Time Complexity: O(n) where n is the number of partial-order
+  */
+  private static List<Character> merge(List<Character> alphabet, List<Character> dep) {
+
+    int index = alphabet.size();
+    ListIterator<Character> iterator = dep.listIterator(dep.size());
+
+    while (iterator.hasPrevious()) {
+      char letter = iterator.previous();
+      int temp = alphabet.indexOf(letter);
+
+      if (temp >= 0 && temp < index) {
+        index = temp;
+      } else {
+        alphabet.remove((Character) letter);
+        alphabet.add(index, letter);
+      }
+    }
 
     return alphabet;
   }
 
-  private static int getPreviousIndex(List<Character> alphabet,
-      List<Character> ordering, int index) {
-    if (index >= 0) {
-      return IntStream.range(index, 0)
-          .filter(i -> alphabet.contains(ordering.get(i)))
-          .findFirst().orElse(-1);
-    }
-
-    return -1;
-
-  }
-
-  private static int getNextIndex(List<Character> alphabet,
-      List<Character> ordering, int index) {
-    return IntStream.range(index, ordering.size())
-        .filter(i -> alphabet.contains(ordering.get(i)))
-        .findFirst().orElse(-1);
-  }
 }

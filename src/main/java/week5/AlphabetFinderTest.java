@@ -28,6 +28,18 @@ public class AlphabetFinderTest {
         is(Arrays.asList('A', 'T', 'R', 'C')));
   }
 
+  @Test
+  public void testMergeCorrection() {
+    assertThat(AlphabetFinder.findAlphabet(new String[]{"ART", "RAT", "CTT", "CTA", "CRA"}),
+        is(Arrays.asList('T', 'A', 'R', 'C')));
+  }
+
+
+  @Test
+  public void testAmbiguous() {
+    assertThat(AlphabetFinder.findAlphabet(new String[]{"ART", "RAT", "CAT", "CAA", "DT", "DC"}),
+        is(Arrays.asList('T', 'A', 'R', 'C', 'D')));
+  }
 
   @Test
   public void testCasing() {
