@@ -8,9 +8,11 @@ import static java.util.stream.Collectors.toList;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.Queue;
 
 public class AlphabetFinder {
@@ -53,49 +55,28 @@ public class AlphabetFinder {
 
     queue.add(Arrays.asList(words));
 
-    while (!queue.isEmpty()) { //number of ordering ~ number of characters in words
-      List<String> suffixes = queue.poll(); //O(1)
+    while (!queue.isEmpty()) {
+      Map<Character, List<String>> groups =
+          queue.poll()
+              .stream()
+              .filter(s -> s.length() > 0)
+              .collect(groupingBy(
+                  s -> s.charAt(0),
+                  LinkedHashMap::new,
+                  mapping(s -> s.substring(1), toList())));
 
-      res.add(getOrdering(suffixes)); //O(n) where n is number of suffixes
-      queue.addAll(getSetsOfSuffixes(suffixes)); // O(n) where n is the number suffixes
+      res.add(distinct(groups.keySet()));
+      queue.addAll(distinct(groups.values()));
 
       queue.removeIf(List::isEmpty);
     }
     return res;
   }
 
-  /*
-   * retrieve the partial order from a list of words by getting all the distinct
-   * first character e.g [ART, RAT,RAD, CAT] returns [A,R,C]
-   *
-   * Time Complexity: O(n) where n is the number of words
-   */
-  private static List<Character> getOrdering(List<String> words) {
-    return words
-        .stream()
-        .filter(s -> s.length() > 0)
-        .map(s -> s.charAt(0))
-        .distinct()
-        .collect(toList());
+  private static <T> List<T> distinct(Collection<T> words) {
+    return words.stream().distinct().collect(toList());
   }
 
-  /*
-   * splits a list of words into bags of word list that can contain ordering information
-   * after the first letter
-   * e.g [ART, RAT,RAD, CAT] returns [[RT],[AT,AD],[AT]
-   *
-   * Time Complexity: O(n) where n is the number of words
-   */
-  private static Collection<List<String>> getSetsOfSuffixes(List<String> words) {
-    return words
-        .stream()
-        .filter(s -> s.length() > 1)
-        .collect(groupingBy(s -> s.charAt(0), mapping(s -> s.substring(1), toList())))
-        .values()
-        .stream()
-        .distinct()
-        .collect(toList());
-  }
 
   /*
    * Given a list of partial orders, the method infers the alphabet by iteratively
@@ -104,7 +85,6 @@ public class AlphabetFinder {
    * Time Complexity: O(n) where n is the number of partial-order
    */
   private static List<Character> getAlphabet(List<List<Character>> orders) {
-
     return orders
         .stream()
         .distinct()
@@ -125,7 +105,6 @@ public class AlphabetFinder {
   * Time Complexity: O(n) where n is the number of partial-order
   */
   private static List<Character> merge(List<Character> alphabet, List<Character> dep) {
-
     int index = alphabet.size();
     ListIterator<Character> iterator = dep.listIterator(dep.size());
 
@@ -143,5 +122,4 @@ public class AlphabetFinder {
 
     return alphabet;
   }
-
 }
