@@ -26,8 +26,12 @@ public class AlphabetFinder {
    *
    * 2) We pass the ordering to getAlphabet that infers the alphabet from the list of words
    *
-   * Time Complexity: O(
-   * Space Complexity: O(
+   * Time Complexity: O(N) where N is the number of characters in the array words
+   *
+   *                : O(getAlphabet) + O(getPartialOrderists)
+   *                : O(N)           + O(N)
+   *                : O(N)
+   * Space Complexity: O(N)
    */
   public static List<Character> findAlphabet(String[] words) {
 
@@ -41,11 +45,19 @@ public class AlphabetFinder {
   /*
    * Iteratively takes set of word lists and for each list get the ordering
    * and a set of word list that rise up after dropping the first character.
-   * The alogrithm starts with a singleton set containing the complete list of words
+   * The algorithm starts with a singleton set containing the complete list of words
    *
    * We remove empty list within the loop to speed up.
    *
-   * Time Complexity: O(n) where n is the number of words
+   * Time Complexity: O(n) where n is the number of characters in array words
+   *
+   * The queue will iterate over the length of the words.
+   * In each iteration we create a map which takes O(|words|) i.e. the number of words.
+   * Similarly, the res.add and queue.addAll takes O(|words|).
+   * This results in O(len*3|words|) = O(len*|words|) = O(n)
+   * where n is the number of characters in the array words
+   *
+   * Space Complexity : O(n)
    */
   private static List<List<Character>> getPartialOrderLists(String[] words) {
     List<List<Character>> res = new ArrayList<>();
@@ -82,7 +94,18 @@ public class AlphabetFinder {
    * Given a list of partial orders, the method infers the alphabet by iteratively
    * merging partial-orders
    *
-   * Time Complexity: O(n) where n is the number of partial-order
+   * Time Complexity: O(|orders|*|alphabet|*|chars|)
+   *      where |orders| is the number of partially ordered lists
+   *            |alphabet| is the size of the alphabet
+   *            |chars|     is the size of the partial ordered lists
+   *
+   * In the context of this algorithm this equates to
+   *                O(n*|alphabet|) where n is the number of characters in the array words
+   * Alphabet at worst can be equal to n so O(2n) which equates to
+   *                O(n)
+   *
+   * Space Complexity : O(1)
+   *
    */
   private static List<Character> getAlphabet(List<List<Character>> orders) {
     return orders
@@ -102,7 +125,8 @@ public class AlphabetFinder {
   *     b) if letter is in alphabet but after index, it mean we found a more accurate ordering and
   *        the position of the letter should be corrected.
   *
-  * Time Complexity: O(n) where n is the number of partial-order
+  * Time Complexity: O(|alphabet|*|dep|)
+  * Space Complexity : O(1)
   */
   private static List<Character> merge(List<Character> alphabet, List<Character> dep) {
     int index = alphabet.size();
