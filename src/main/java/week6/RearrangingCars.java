@@ -35,12 +35,10 @@ public class RearrangingCars {
 
     //create map car -> pos and get index of emptyBox
     for (int i = 0; i < source.length; i++) {
-      if (source[i] != target[i] && source[i] != EMPTY) {
-        cars.put(source[i], i);
-      }
-
       if (source[i] == EMPTY) {
         emptyBox = i;
+      } else if (source[i] != target[i]) {
+        cars.put(source[i], i);
       }
     }
 
@@ -53,9 +51,13 @@ public class RearrangingCars {
     return sb.toString();
   }
 
+  public static void printRearrangingCars(int[] source, int[] target) {
+    System.out.print(rearrangeCars(source, target));
+  }
+
   private static int correctEmpty(Map<Integer, Integer> cars, int[] target, int emptyBox,
       StringBuilder sb) {
-    if (target[emptyBox] == EMPTY && !cars.isEmpty()) {
+    if (target[emptyBox] == EMPTY) {
       Entry<Integer, Integer> wrongPosCar = cars.entrySet().iterator().next();
       appendMove(emptyBox, wrongPosCar.getValue(), sb);
       return cars.replace(wrongPosCar.getKey(), emptyBox);
@@ -76,10 +78,5 @@ public class RearrangingCars {
 
   private static void appendMove(int source, int target, StringBuilder sb) {
     sb.append("move from " + source + " to " + target + "\n");
-  }
-
-
-  public void printRearrangingCars(int[] source, int[] target) {
-    System.out.print(rearrangeCars(source, target));
   }
 }
