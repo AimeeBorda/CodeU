@@ -55,6 +55,14 @@ public class RearrangingCars {
     System.out.print(rearrangeCars(source, target));
   }
 
+  /*
+  * This steps is required if emptyBox is in the right position but the list is not sorted.
+  *     e.g. cars = [1, 0, 2, 3], target = [3, 0, 2, 1] and emptyBox = 1
+  * In this case, we swap the emptyBox with the first wrong positioned car in the map
+  *
+  * Time Complexity: O(1)
+  * Space Complexity: O(1)
+  */
   private static int correctEmpty(Map<Integer, Integer> cars, int[] target, int emptyBox,
       StringBuilder sb) {
     if (target[emptyBox] == EMPTY) {
@@ -66,6 +74,12 @@ public class RearrangingCars {
     return emptyBox;
   }
 
+  /*
+  * Swaps the emptyBox with the car that should be in that position according to target
+  *
+  * Time Complexity: O(1)
+  * Space Complexity: O(1)
+  */
   private static int moveEmpty(Map<Integer, Integer> cars, int[] target, int emptyBox,
       StringBuilder sb) {
     if (cars.containsKey(target[emptyBox])) {
