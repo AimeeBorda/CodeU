@@ -75,11 +75,7 @@ public class RearrangingCars {
   }
 
   private static void appendMove(int source, int target, StringBuilder sb) {
-    sb.append("move from ");
-    sb.append(source);
-    sb.append(" to ");
-    sb.append(target);
-    sb.append("\n");
+    sb.append("move from " + source + " to " + target + "\n");
   }
 
 
