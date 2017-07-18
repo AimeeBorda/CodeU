@@ -29,6 +29,18 @@ public class RearrangingCarsTest {
   }
 
   @Test
+  public void testEmptyCorrect() {
+    String res =
+        "move from 2 to 0\n"
+            + "move from 0 to 3\n"
+            + "move from 3 to 1\n"
+            + "move from 1 to 2\n";
+    int[] source = {1, 2, 0, 3};
+    int[] target = {3, 1, 0, 2};
+    assertEquals(res, RearrangingCars.rearrangeCars(source, target));
+  }
+
+  @Test
   public void testReverse() {
     String res =
         "move from 0 to 10\n"

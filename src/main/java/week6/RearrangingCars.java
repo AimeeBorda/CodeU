@@ -14,7 +14,7 @@ public class RearrangingCars {
    * Iteratively, replace 0 with the correct car. We remove cars that are in correct pos from map
    *
    * If 0 becomes in the correct position but map is not empty, move 0 to first incorrect car pos
-   * and start iterations again until map is empty.
+   * and start iterating again until map is empty.
    *
    * Time Complexity: O(n)
    * Space Complexity: O(n)
@@ -31,16 +31,7 @@ public class RearrangingCars {
     }
 
     HashMap<Integer, Integer> cars = new HashMap<>();
-    int emptyBox = -1;
-
-    //create map car -> pos and get index of emptyBox
-    for (int i = 0; i < source.length; i++) {
-      if (source[i] == EMPTY) {
-        emptyBox = i;
-      } else if (source[i] != target[i]) {
-        cars.put(source[i], i);
-      }
-    }
+    int emptyBox = populateMap(source, target, cars);
 
     StringBuilder sb = new StringBuilder();
     while (!cars.isEmpty()) {
@@ -51,14 +42,34 @@ public class RearrangingCars {
     return sb.toString();
   }
 
-  public static void printRearrangingCars(int[] source, int[] target) {
-    System.out.print(rearrangeCars(source, target));
+  /*
+   * Creates a map of all cars that needs to be moved (we never move a car that is in the right
+   * position). We map car id -> position
+   *
+   * Returns the index of the empty box
+   *
+   * Time Complexity: O(n)
+   * Space Complexity: O(1)
+   *
+   * where n is the length of the arrays source and target
+   */
+  private static int populateMap(int[] source, int[] target, HashMap<Integer, Integer> cars) {
+    int emptyBox = -1;
+    for (int i = 0; i < source.length; i++) {
+      if (source[i] == EMPTY) {
+        emptyBox = i;
+      } else if (source[i] != target[i]) {
+        cars.put(source[i], i);
+      }
+    }
+    return emptyBox;
   }
 
   /*
   * This steps is required if emptyBox is in the right position but the list is not sorted.
   *     e.g. cars = [1, 0, 2, 3], target = [3, 0, 2, 1] and emptyBox = 1
-  * In this case, we swap the emptyBox with the first wrong positioned car in the map
+  * We swap the emptyBox with one of the cars in the map (wrongly positioned), here we perform
+  *     "move from 1 to 0"
   *
   * Time Complexity: O(1)
   * Space Complexity: O(1)
@@ -75,7 +86,8 @@ public class RearrangingCars {
   }
 
   /*
-  * Swaps the emptyBox with the car that should be in that position according to target
+  * Swaps the emptyBox with the car that should be in that position according to target. The car
+  * is now in the correct position so is removed from the map
   *
   * Time Complexity: O(1)
   * Space Complexity: O(1)
