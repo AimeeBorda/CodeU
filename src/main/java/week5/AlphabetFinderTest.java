@@ -54,7 +54,7 @@ public class AlphabetFinderTest {
   @Test
   public void testCasing() {
     assertThat(AlphabetFinder.findAlphabet(new String[]{"ART", "RAT", "cAT", "CAR", "CAa"}),
-        is(Arrays.asList('A', 'R', 'c', 'C', 'T', 'a')));
+        is(Arrays.asList('A', 'T', 'R', 'c', 'a', 'C')));
   }
 
   @Test
@@ -78,7 +78,7 @@ public class AlphabetFinderTest {
     //character of the word whereas 'S' on the fourth
     assertThat(
         AlphabetFinder.findAlphabet(new String[]{"ARTS", "RATTA", "CAT", "CAR", "CADDDDDDDDDD"}),
-        is(Arrays.asList('A', 'T', 'R', 'C', 'D', 'S')));
+        is(Arrays.asList('A', 'S', 'T', 'R', 'C', 'D')));
   }
 
   @Test
@@ -87,7 +87,7 @@ public class AlphabetFinderTest {
     //character of the word whereas 'S' on the fourth
     assertThat(
         AlphabetFinder.findAlphabet(new String[]{"ARTS", "RATTA", "CAT", "CAR", "CADDDDDDDDDD"}),
-        is(Arrays.asList('A', 'T', 'R', 'C', 'D', 'S')));
+        is(Arrays.asList('A', 'S', 'T', 'R', 'C', 'D')));
   }
 
   @Test
@@ -97,6 +97,14 @@ public class AlphabetFinderTest {
     assertThat(
         AlphabetFinder
             .findAlphabet(new String[]{"ART", "RB", "RD", "RT", "TC", "T", "SC", "SB", "SA"}),
-        is(Arrays.asList('C', 'B', 'A', 'R', 'D', 'T', 'S')));
+        is(Arrays.asList('C', 'B', 'D', 'A', 'R', 'T', 'S')));
   }
+
+  @Test
+  public void testCounterExample() {
+    assertThat(
+        AlphabetFinder.findAlphabet(new String[]{"AH", "BG", "CF", "DF", "DG", "EG", "EH"}),
+        is(Arrays.asList('A', 'F', 'B', 'G', 'C', 'H', 'D', 'E')));
+  }
+
 }
