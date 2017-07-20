@@ -1,7 +1,9 @@
 package week6;
 
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -24,19 +26,33 @@ public class RearrangingCars {
    *
    * where n is the length of the array
    */
-  public static String rearrangeCars(final int[] source, final int[] target) {
+  public static List<Integer> pathForEmpty(final int[] source, final int[] target) {
 
-    if (source == null || target == null || source.length != target.length || source.length == 0) {
-      return "";
+    if (source == null || target == null || source.length != target.length) {
+      return new ArrayList<>();
     }
 
+    //creates map (wrongly positioned) car id -> position and get index of the empty Box
     HashMap<Integer, Integer> cars = new HashMap<>();
     int emptyBox = populateMap(source, target, cars);
 
-    StringBuilder sb = new StringBuilder();
+    List<Integer> res = new ArrayList<>(cars.size());
+    res.add(emptyBox);
     while (!cars.isEmpty()) {
-      emptyBox = correctEmpty(cars, target, emptyBox, sb);
-      emptyBox = moveEmpty(cars, target, emptyBox, sb);
+      emptyBox = correctEmpty(cars, target, emptyBox, res);
+      emptyBox = moveEmpty(cars, target, emptyBox, res);
+    }
+
+    return res;
+  }
+
+
+  public static String rearrangeCars(final int[] source, final int[] target) {
+    List<Integer> res = pathForEmpty(source, target);
+
+    StringBuilder sb = new StringBuilder();
+    for (int i = 1; i < res.size(); i++) {
+      sb.append("move from " + res.get(i - 1) + " to " + res.get(i) + "\n");
     }
 
     return sb.toString();
@@ -75,10 +91,10 @@ public class RearrangingCars {
   * Space Complexity: O(1)
   */
   private static int correctEmpty(Map<Integer, Integer> cars, int[] target, int emptyBox,
-      StringBuilder sb) {
+      List<Integer> res) {
     if (target[emptyBox] == EMPTY) {
       Entry<Integer, Integer> wrongPosCar = cars.entrySet().iterator().next();
-      appendMove(emptyBox, wrongPosCar.getValue(), sb);
+      res.add(wrongPosCar.getValue());
       return cars.replace(wrongPosCar.getKey(), emptyBox);
     }
 
@@ -93,16 +109,12 @@ public class RearrangingCars {
   * Space Complexity: O(1)
   */
   private static int moveEmpty(Map<Integer, Integer> cars, int[] target, int emptyBox,
-      StringBuilder sb) {
+      List<Integer> res) {
     if (cars.containsKey(target[emptyBox])) {
-      appendMove(emptyBox, cars.get(target[emptyBox]), sb);
+      res.add(cars.get(target[emptyBox]));
       return cars.remove(target[emptyBox]);
     }
 
     return emptyBox;
-  }
-
-  private static void appendMove(int source, int target, StringBuilder sb) {
-    sb.append("move from " + source + " to " + target + "\n");
   }
 }

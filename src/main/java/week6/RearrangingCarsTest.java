@@ -1,13 +1,20 @@
 package week6;
 
 
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
+import java.util.Arrays;
 import java.util.stream.IntStream;
 import org.junit.Test;
 
 public class RearrangingCarsTest {
 
+  /*
+   * In real world the rearrangeCars and pathForEmpty would be diff tests in case String
+   * needs to change
+   */
   @Test
   public void testEmpty() {
     assertEquals("", RearrangingCars.rearrangeCars(null, null));
@@ -26,6 +33,7 @@ public class RearrangingCarsTest {
     int[] source = {1, 2, 0, 3};
     int[] target = {3, 1, 2, 0};
     assertEquals(res, RearrangingCars.rearrangeCars(source, target));
+    assertEquals(Arrays.asList(2, 1, 0, 3), RearrangingCars.pathForEmpty(source, target));
   }
 
   @Test
@@ -38,6 +46,7 @@ public class RearrangingCarsTest {
     int[] source = {1, 2, 0, 3};
     int[] target = {3, 1, 0, 2};
     assertEquals(res, RearrangingCars.rearrangeCars(source, target));
+    assertEquals(Arrays.asList(2, 0, 3, 1, 2), RearrangingCars.pathForEmpty(source, target));
   }
 
   @Test
@@ -59,6 +68,8 @@ public class RearrangingCarsTest {
     int[] target = IntStream.rangeClosed(0, 10).map(i -> 10 - i).toArray();
     int[] source = IntStream.rangeClosed(0, 10).toArray();
     assertEquals(res, RearrangingCars.rearrangeCars(source, target));
+    assertEquals(Arrays.asList(0, 10, 1, 9, 10, 2, 8, 10, 3, 7, 10, 4, 6, 10),
+        RearrangingCars.pathForEmpty(source, target));
   }
 
   @Test
@@ -77,6 +88,8 @@ public class RearrangingCarsTest {
     int[] source = {1, 2, 3, 4, 5, 0, 6, 7, 8, 9, 10};
     int[] target = IntStream.rangeClosed(0, 10).map(i -> 10 - i).toArray();
     assertEquals(res, RearrangingCars.rearrangeCars(source, target));
+    assertEquals(Arrays.asList(5, 4, 6, 3, 7, 2, 8, 1, 9, 0, 10),
+        RearrangingCars.pathForEmpty(source, target));
   }
 
   @Test
@@ -89,6 +102,7 @@ public class RearrangingCarsTest {
     int[] source = {1, 2, 0, 3};
     int[] target = {3, 0, 2, 1};
     assertEquals(res, RearrangingCars.rearrangeCars(source, target));
+    assertEquals(Arrays.asList(2, 1, 0, 3, 1), RearrangingCars.pathForEmpty(source, target));
   }
 
   @Test
@@ -107,11 +121,16 @@ public class RearrangingCarsTest {
     int[] source = {1, 2, 0, 3, 5, 6, 7, 8};
     int[] target = {3, 0, 2, 1, 8, 7, 6, 5};
     assertEquals(res, RearrangingCars.rearrangeCars(source, target));
+    assertThat(RearrangingCars.pathForEmpty(source, target),
+        is(Arrays.asList(2, 1, 0, 3, 1, 4, 7, 1, 5, 6, 1)));
+    assertEquals(Arrays.asList(2, 1, 0, 3, 1, 4, 7, 1, 5, 6, 1),
+        RearrangingCars.pathForEmpty(source, target));
   }
 
   @Test
   public void testAlreadyCorrect() {
     int[] arr = {1, 2, 0, 3, 5, 6, 7, 8};
     assertEquals("", RearrangingCars.rearrangeCars(arr, arr));
+    assertEquals(Arrays.asList(2), RearrangingCars.pathForEmpty(arr, arr));
   }
 }
