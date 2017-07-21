@@ -8,72 +8,118 @@ import static java.util.stream.Collectors.toList;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Queue;
 
 public class AlphabetFinder {
 
-  public static List<Character> findAlphabet(String[] words) {
+  /*
+   * The graph is represented using adjacency List as 1) Alphabet might be infinitely large, 2)
+   * from example the graph seem to be sparse 3) we do not check the presence of arbitrary edges
+   * but systematically parse through the graph.
+   *
+   * Main Steps: build graph from list of words -> topological sort
+   *
+   * Returns : empty <- if there is a cycle in the words
+   *           List<Character> <- the ordered alphabet
+   *
+   * Time Complexity: O(build) + O(sort)
+   *
+   *
+   */
+  public static Optional<List<Character>> findAlphabet(final String[] words) {
 
     if (words == null) {
-      return new ArrayList<>();
+      return Optional.empty();
     }
 
-    List<Node> roots = new ArrayList();
-    int edges = buildGraph(words, roots);
-    return topologicalSort(roots, edges);
+    Graph graph = buildGraph(words);
+    return topologicalSort(graph);
   }
 
-  private static List<Character> topologicalSort(List<Node> roots, int edges) {
+  /*
+   * Topological Sort: Iteratively, vertices with no incoming edges are
+   * 1. added to the alphabet,
+   * 2. we remove their outgoing transitions and
+   * 3. add vertices with no incoming transitions to the queue
+   *
+   * Time Complexity:  O(|V| + |E|) in this case
+   * V is the alphabet and
+   * E is the length of words in the array words[]
+   */
+  private static Optional<List<Character>> topologicalSort(final Graph graph) {
     List<Character> res = new ArrayList<>();
+    int visited = 0;
+    List<Node> roots = new ArrayList<>(graph.roots);
+
     while (!roots.isEmpty()) {
-      Node next = roots.remove(0);
-      res.add(next.c);
-      while (!next.outgoing.isEmpty()) {
-        Node dep = next.removeEdge();
-        edges--;
-        if (dep.incoming.size() == 0) {
-          roots.add(dep);
+      Node next = roots.remove(0); //O(1)
+      res.add(next.c); //O(n)
+      visited++; //O(1)
+      for (Node n : next.outgoing) { //O(fan-out/ E)
+        n.inDegree--; //O(1)
+        if (n.inDegree == 0) {
+          roots.add(n); //O(n)
         }
       }
+
     }
 
-    //still to find cycles
-    return edges == 0 ? res : new ArrayList<>(); //this will be exception
+    //if not all the edges have been visited then there is a cycle.
+    return visited == graph.vertices ? Optional.of(res) : Optional.empty();
   }
 
-  private static int buildGraph(String[] words, List<Node> roots) {
+  /*
+   * The while loop iteratively groups the word according to the first character.
+   * The list of first characters are inserted into the graph and each group of suffixes
+   * is added to the queue to infer its partial orders.
+   *
+   * Time Complexity: O(nml)
+   * where
+   *    n is the number of words,
+   *    l is the len of words,
+   *    m is the fan-out of words
+   */
+  private static Graph buildGraph(String[] words) {
 
     Map<Character, Node> nodes = new HashMap<>();
     Queue<List<String>> queue = new LinkedList<>();
 
-    queue.add(Arrays.asList(words));
+    queue.add(Arrays.asList(words)); //O(1) as queue is empty
 
-    while (!queue.isEmpty()) {
-      Map<Character, List<String>> groups =
-          queue.poll()
+    while (!queue.isEmpty()) { // O(l) where l is the len of words
+      List<String> group = queue.poll(); //O(1)
+      group.removeIf(String::isEmpty); // O(n) where n is the number of words
+
+      queue.addAll(
+          group
               .stream()
-              .filter(s -> s.length() > 0)
               .collect(groupingBy(
                   s -> s.charAt(0),
-                  LinkedHashMap::new,
-                  mapping(s -> s.substring(1), toList())));
+                  mapping(s -> s.substring(1), toList()))).values());
 
-      updateGraph(groups.keySet().toArray(new Character[0]), nodes);
-      queue.addAll(groups.values());
+      updateGraph(group.stream().map(s -> s.charAt(0)).collect(toList()), nodes); //O(nm)
 
     }
 
-    roots.addAll(nodes.values().stream().filter(n -> n.incoming.isEmpty()).collect(toList()));
-
-    return nodes.values().stream().map(n -> n.outgoing.size()).reduce(0, Integer::sum);
+    return new Graph(
+        nodes.values().stream().filter(n -> n.inDegree == 0).collect(toList()),
+        nodes.size()
+    );
   }
 
-
-  private static void updateGraph(Character[] partialOrder, Map<Character, Node> nodes) {
+  /*
+   * This method updates the graph with the partialOrder passed as a parameter
+   *
+   * Time Complexity: O(nm)
+   *  where n is the length of the partial order and
+   *        m is fan out for nodes
+   *  Space Complexity: O(1)
+   */
+  private static void updateGraph(List<Character> partialOrder, Map<Character, Node> nodes) {
     Node prev = null;
     for (Character c : partialOrder) {
 
@@ -82,7 +128,8 @@ public class AlphabetFinder {
       }
       Node temp = nodes.get(c);
 
-      if (prev != null) {
+      //if not first character or the same character from the prev node
+      if (prev != null && prev.c != temp.c) {
         prev.addEdge(temp);
       }
 
@@ -94,23 +141,26 @@ public class AlphabetFinder {
 
     final char c;
     List<Node> outgoing = new ArrayList<>();
-    List<Node> incoming = new ArrayList<>();
+    int inDegree = 0;
 
     private Node(char c) {
       this.c = c;
     }
 
     public void addEdge(Node n) {
-      n.incoming.add(this);
+      n.inDegree++;
       outgoing.add(n);
     }
+  }
 
-    public Node removeEdge() {
-      Node node = this.outgoing.remove(0);
-      node.incoming.remove(this);
-      this.outgoing.remove(node);
+  private static class Graph {
 
-      return node;
+    final int vertices;
+    final List<Node> roots;
+
+    public Graph(List<Node> roots, int vertices) {
+      this.roots = roots;
+      this.vertices = vertices;
     }
   }
 }
