@@ -8,10 +8,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
 
-public class RearrangingCars {
+public class ParkingLot {
 
   private static final int EMPTY = 0;
-  private static final Logger logger = Logger.getLogger(RearrangingCars.class.getName());
+  private static final Logger logger = Logger.getLogger(ParkingLot.class.getName());
 
   /*
    * First, we create a map of wrongly positioned cars, car no. -> position

@@ -6,16 +6,16 @@ import static org.junit.Assert.assertEquals;
 import java.util.stream.IntStream;
 import org.junit.Test;
 
-public class RearrangingCarsTest {
+public class ParkingLotTest {
 
 
   @Test
   public void testEmpty() {
-    assertEquals("", RearrangingCars.rearrangeCars(null, null).toString());
-    assertEquals("", RearrangingCars.rearrangeCars(null, new int[1]).toString());
-    assertEquals("", RearrangingCars.rearrangeCars(new int[1], null).toString());
-    assertEquals("", RearrangingCars.rearrangeCars(new int[1], new int[2]).toString());
-    assertEquals("", RearrangingCars.rearrangeCars(new int[0], new int[0]).toString());
+    assertEquals("", ParkingLot.rearrangeCars(null, null).toString());
+    assertEquals("", ParkingLot.rearrangeCars(null, new int[1]).toString());
+    assertEquals("", ParkingLot.rearrangeCars(new int[1], null).toString());
+    assertEquals("", ParkingLot.rearrangeCars(new int[1], new int[2]).toString());
+    assertEquals("", ParkingLot.rearrangeCars(new int[0], new int[0]).toString());
   }
 
   @Test
@@ -26,7 +26,7 @@ public class RearrangingCarsTest {
             + "move from 0 to 3\n";
     int[] source = {1, 2, 0, 3};
     int[] target = {3, 1, 2, 0};
-    assertEquals(res, RearrangingCars.rearrangeCars(source, target).toString());
+    assertEquals(res, ParkingLot.rearrangeCars(source, target).toString());
   }
 
   @Test
@@ -38,7 +38,7 @@ public class RearrangingCarsTest {
             + "move from 1 to 2\n";
     int[] source = {1, 2, 0, 3};
     int[] target = {3, 1, 0, 2};
-    assertEquals(res, RearrangingCars.rearrangeCars(source, target).toString());
+    assertEquals(res, ParkingLot.rearrangeCars(source, target).toString());
   }
 
   @Test
@@ -59,7 +59,7 @@ public class RearrangingCarsTest {
             + "move from 6 to 10\n";
     int[] target = IntStream.rangeClosed(0, 10).map(i -> 10 - i).toArray();
     int[] source = IntStream.rangeClosed(0, 10).toArray();
-    assertEquals(res, RearrangingCars.rearrangeCars(source, target).toString());
+    assertEquals(res, ParkingLot.rearrangeCars(source, target).toString());
   }
 
   @Test
@@ -77,7 +77,7 @@ public class RearrangingCarsTest {
             + "move from 0 to 10\n";
     int[] source = {1, 2, 3, 4, 5, 0, 6, 7, 8, 9, 10};
     int[] target = IntStream.rangeClosed(0, 10).map(i -> 10 - i).toArray();
-    assertEquals(res, RearrangingCars.rearrangeCars(source, target).toString());
+    assertEquals(res, ParkingLot.rearrangeCars(source, target).toString());
   }
 
   @Test
@@ -89,7 +89,7 @@ public class RearrangingCarsTest {
             + "move from 3 to 1\n";
     int[] source = {1, 2, 0, 3};
     int[] target = {3, 0, 2, 1};
-    assertEquals(res, RearrangingCars.rearrangeCars(source, target).toString());
+    assertEquals(res, ParkingLot.rearrangeCars(source, target).toString());
   }
 
   @Test
@@ -107,12 +107,12 @@ public class RearrangingCarsTest {
             + "move from 6 to 1\n";
     int[] source = {1, 2, 0, 3, 5, 6, 7, 8};
     int[] target = {3, 0, 2, 1, 8, 7, 6, 5};
-    assertEquals(res, RearrangingCars.rearrangeCars(source, target).toString());
+    assertEquals(res, ParkingLot.rearrangeCars(source, target).toString());
   }
 
   @Test
   public void testAlreadyCorrect() {
     int[] arr = {1, 2, 0, 3, 5, 6, 7, 8};
-    assertEquals("", RearrangingCars.rearrangeCars(arr, arr).toString());
+    assertEquals("", ParkingLot.rearrangeCars(arr, arr).toString());
   }
 }
