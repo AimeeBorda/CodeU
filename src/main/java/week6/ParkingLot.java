@@ -20,17 +20,18 @@ public class ParkingLot {
    * If 0 becomes in the correct position but map is not empty, move 0 to first incorrect car pos
    * and start iterating again until map is empty.
    *
-   * Time Complexity: O(n)
-   * Space Complexity: O(n)
+   * Time Complexity: O(|source|*|moves|)
+   * In the worst case |moves| is 2*|source| where both methods add a move in each iteration
+    *               : O(|source|^2)
+   * Space Complexity: O(|source|)
+   *
    * Assumptions:
    *    1) len(source) = len(target)
    *    2) arrays contain O...n, this means no duplications
-   *
-   * where n is the length of the array
    */
   public static List<Move> rearrangeCars(final int[] source, final int[] target) {
 
-    List<Move> res = new ArrayList<Move>() {
+    List<Move> moves = new ArrayList<Move>() {
       @Override
       public String toString() {
         return super.toString().replaceAll("\\[|\\]|(, )", "");
@@ -38,7 +39,7 @@ public class ParkingLot {
     };
 
     if (source == null || target == null || source.length != target.length) {
-      return res;
+      return moves;
     }
 
     //creates map (wrongly positioned) car id -> position and get index of the empty Box
@@ -47,11 +48,11 @@ public class ParkingLot {
 
     while (!misplacedCars.isEmpty()) {
       //if emptyBox is in right pos, we swap the emptyBox with one of the wrong cars
-      emptyBox = correctEmpty(misplacedCars, target, emptyBox, res);
-      emptyBox = moveEmpty(misplacedCars, target, emptyBox, res);
+      emptyBox = correctEmpty(misplacedCars, target, emptyBox, moves);
+      emptyBox = moveEmpty(misplacedCars, target, emptyBox, moves);
     }
 
-    return res;
+    return moves;
   }
 
 
@@ -85,7 +86,7 @@ public class ParkingLot {
   * We swap the emptyBox with one of the cars in the map (wrongly positioned), here we perform
   *     "move from 1 to 0"
   *
-  * Time Complexity: O(1)
+  * Time Complexity: O(|moves|) from move method, other map operations are O(1)
   * Space Complexity: O(1)
   */
   private static int correctEmpty(Map<Integer, Integer> cars, int[] target, int emptyBox,
@@ -103,7 +104,7 @@ public class ParkingLot {
   * Swaps the emptyBox with the car that should be in that position according to target. The car
   * is now in the correct position so is removed from the map
   *
-  * Time Complexity: O(1)
+  * Time Complexity: O(|moves|) from move method, other map operations are O(1)
   * Space Complexity: O(1)
   */
   private static int moveEmpty(Map<Integer, Integer> cars, int[] target, int emptyBox,
@@ -116,6 +117,12 @@ public class ParkingLot {
     return emptyBox;
   }
 
+  /*
+  * adds move to Arraylist and log event
+  *
+  * Time Complexity: O(|moves|) from add
+  * Space Complexity: O(1)
+  */
   private static boolean move(int source, int target, List<Move> moves) {
     Move m = new Move(source, target);
     logger.info(m.toString());
