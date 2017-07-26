@@ -20,10 +20,10 @@ public class ParkingLot {
    * If 0 becomes in the correct position but map is not empty, move 0 to first incorrect car pos
    * and start iterating again until map is empty.
    *
-   * Time Complexity: O(|source|*|moves|)
-   * In the worst case |moves| is 2*|source| where both methods add a move in each iteration
-    *               : O(|source|^2)
-   * Space Complexity: O(|source|)
+   * Amortized Time Complexity: O(n)
+   * Space Complexity: O(n)
+   *
+   * where n is the size of the array source
    *
    * Assumptions:
    *    1) len(source) = len(target)
@@ -38,7 +38,7 @@ public class ParkingLot {
     List<Move> moves = new ArrayList<Move>() {
       @Override
       public String toString() {
-        return super.toString().replaceAll("\\[|\\]|(, )", "");
+        return super.toString().replaceAll("\\[|]|(, )", "");
       }
     };
 
@@ -65,7 +65,7 @@ public class ParkingLot {
    * Updates the map misPlacedCars : cars that needs to be moved -> current position.   *
    * Returns the index of the empty box
    *
-   * Time Complexity: O(|source|)
+   * Time Complexity: O(n) where n is the size of array source
    * Space Complexity: O(1)
    *
    * @param source : the initial configuration of the cars
@@ -92,7 +92,7 @@ public class ParkingLot {
   * We swap the emptyBox with one of the cars in the map (wrongly positioned), here we perform
   *     "move from 1 to 0"
   *
-  * Time Complexity: O(|moves|) from moves.add
+  * Amortized Time Complexity: O(1)
   * Space Complexity: O(1)
   *
   * @param misplacedCars : map to be updated with the cars to be moved
@@ -116,7 +116,7 @@ public class ParkingLot {
   * Swaps the emptyBox with the car that should be there according to target and remove
   * car from map (as it is in correct pos)
   *
-  * Time Complexity: O(|moves|) from moves.add
+  * Amortized Time Complexity: O(1)
   * Space Complexity: O(1)
   *
   * @param misplacedCars : map to be updated with the cars to be moved
