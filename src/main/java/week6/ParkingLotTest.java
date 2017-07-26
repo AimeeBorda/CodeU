@@ -133,4 +133,19 @@ public class ParkingLotTest {
     int[] target = {1, 2, 6, 3, 4, 5, 7, 8, 9, 0};
     assertEquals(res, ParkingLot.rearrangeCars(source, target).toString());
   }
+
+  @Test
+  public void testSwap() {
+    String res =
+        "move from 3 to 0\n"
+            + "move from 0 to 2\n"
+            + "move from 2 to 1\n"
+            + "move from 1 to 3\n"
+            + "move from 3 to 4\n"
+            + "move from 4 to 5\n"
+            + "move from 5 to 3\n";
+    int[] source = {1, 2, 3, 0, 4, 5};
+    int[] target = {3, 1, 2, 0, 5, 4};
+    assertEquals(res, ParkingLot.rearrangeCars(source, target).toString());
+  }
 }

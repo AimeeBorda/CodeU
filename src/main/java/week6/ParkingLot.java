@@ -28,6 +28,10 @@ public class ParkingLot {
    * Assumptions:
    *    1) len(source) = len(target)
    *    2) arrays contain O...n, this means no duplications
+   *
+   * @param source : the initial configuration of the cars
+   * @param target : the target configuration of the cars
+   * @return : List of Moves to be performed to transform source -> target
    */
   public static List<Move> rearrangeCars(final int[] source, final int[] target) {
 
@@ -52,20 +56,22 @@ public class ParkingLot {
       emptyBox = moveEmpty(misplacedCars, target, emptyBox, moves);
     }
 
+    logger.info(moves.toString());
     return moves;
   }
 
 
   /*
-   * Creates a map of all cars that needs to be moved (we never move a car that is in the right
-   * position). We map car id -> position
-   *
+   * Updates the map misPlacedCars : cars that needs to be moved -> current position.   *
    * Returns the index of the empty box
    *
-   * Time Complexity: O(n)
+   * Time Complexity: O(|source|)
    * Space Complexity: O(1)
    *
-   * where n is the length of the arrays source and target
+   * @param source : the initial configuration of the cars
+   * @param target : the target configuration of the cars
+   * @param misplacedCars : the map to be updated cars to be moved -> their current position
+   * @return : the index of the empty box
    */
   private static int populateMap(int[] source, int[] target,
       HashMap<Integer, Integer> misplacedCars) {
@@ -86,48 +92,47 @@ public class ParkingLot {
   * We swap the emptyBox with one of the cars in the map (wrongly positioned), here we perform
   *     "move from 1 to 0"
   *
-  * Time Complexity: O(|moves|) from move method, other map operations are O(1)
+  * Time Complexity: O(|moves|) from moves.add
   * Space Complexity: O(1)
+  *
+  * @param misplacedCars : map to be updated with the cars to be moved
+  * @param target : the target configuration of the cars
+  * @param emptyBox : the index of the emptyBox
+  * @param moves : the list of moves which is appended if emptyBox needs to be swapped
+  * @return : the index of the emptyBox
   */
-  private static int correctEmpty(Map<Integer, Integer> cars, int[] target, int emptyBox,
+  private static int correctEmpty(Map<Integer, Integer> misplacedCars, int[] target, int emptyBox,
       List<Move> moves) {
     if (target[emptyBox] == EMPTY) {
-      Entry<Integer, Integer> wrongPosCar = cars.entrySet().iterator().next();
-      move(emptyBox, wrongPosCar.getValue(), moves);
-      return cars.replace(wrongPosCar.getKey(), emptyBox);
+      Entry<Integer, Integer> wrongPosCar = misplacedCars.entrySet().iterator().next();
+      moves.add(new Move(emptyBox, wrongPosCar.getValue()));
+      return misplacedCars.replace(wrongPosCar.getKey(), emptyBox);
     }
 
     return emptyBox;
   }
 
   /*
-  * Swaps the emptyBox with the car that should be in that position according to target. The car
-  * is now in the correct position so is removed from the map
+  * Swaps the emptyBox with the car that should be there according to target and remove
+  * car from map (as it is in correct pos)
   *
-  * Time Complexity: O(|moves|) from move method, other map operations are O(1)
+  * Time Complexity: O(|moves|) from moves.add
   * Space Complexity: O(1)
+  *
+  * @param misplacedCars : map to be updated with the cars to be moved
+  * @param target : the target configuration of the cars
+  * @param emptyBox : the index of the emptyBox
+  * @param moves : the list of moves which is appended if emptyBox needs to be swapped
+  * @return : the index of the emptyBox
   */
-  private static int moveEmpty(Map<Integer, Integer> cars, int[] target, int emptyBox,
+  private static int moveEmpty(Map<Integer, Integer> misplacedCars, int[] target, int emptyBox,
       List<Move> moves) {
-    if (cars.containsKey(target[emptyBox])) {
-      move(emptyBox, cars.get(target[emptyBox]), moves);
-      return cars.remove(target[emptyBox]);
+    if (misplacedCars.containsKey(target[emptyBox])) {
+      moves.add(new Move(emptyBox, misplacedCars.get(target[emptyBox])));
+      return misplacedCars.remove(target[emptyBox]);
     }
 
     return emptyBox;
-  }
-
-  /*
-  * adds move to Arraylist and log event
-  *
-  * Time Complexity: O(|moves|) from add
-  * Space Complexity: O(1)
-  */
-  private static boolean move(int source, int target, List<Move> moves) {
-    Move m = new Move(source, target);
-    logger.info(m.toString());
-
-    return moves.add(m);
   }
 
   private static class Move {
