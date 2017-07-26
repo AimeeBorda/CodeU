@@ -19,6 +19,13 @@ public class ParkingLotTest {
   }
 
   @Test
+  public void testSingleElements() {
+    assertEquals("", ParkingLot.rearrangeCars(new int[]{0}, new int[]{0}).toString());
+    assertEquals("", ParkingLot.rearrangeCars(new int[]{1}, new int[]{1}).toString());
+    assertEquals("", ParkingLot.rearrangeCars(new int[]{1, 2, 3}, new int[]{1, 2, 3}).toString());
+  }
+
+  @Test
   public void testExample() {
     String res =
         "move from 2 to 1\n"
@@ -114,5 +121,16 @@ public class ParkingLotTest {
   public void testAlreadyCorrect() {
     int[] arr = {1, 2, 0, 3, 5, 6, 7, 8};
     assertEquals("", ParkingLot.rearrangeCars(arr, arr).toString());
+  }
+
+  @Test
+  public void testRandomPattern() {
+    String res =
+        "move from 2 to 5\n"
+            + "move from 5 to 4\n"
+            + "move from 4 to 9\n";
+    int[] source = {1, 2, 0, 3, 5, 6, 7, 8, 9, 4};
+    int[] target = {1, 2, 6, 3, 4, 5, 7, 8, 9, 0};
+    assertEquals(res, ParkingLot.rearrangeCars(source, target).toString());
   }
 }
