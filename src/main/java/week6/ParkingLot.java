@@ -52,7 +52,9 @@ public class ParkingLot {
 
     while (!misplacedCars.isEmpty()) {
       //if emptyBox is in right pos, we swap the emptyBox with one of the wrong cars
-      emptyBox = correctEmpty(misplacedCars, target, emptyBox, moves);
+      if (target[emptyBox] == EMPTY) {
+        emptyBox = correctEmpty(misplacedCars, target, emptyBox, moves);
+      }
       emptyBox = moveEmpty(misplacedCars, target, emptyBox, moves);
     }
 
@@ -103,13 +105,9 @@ public class ParkingLot {
   */
   private static int correctEmpty(Map<Integer, Integer> misplacedCars, int[] target, int emptyBox,
       List<Move> moves) {
-    if (target[emptyBox] == EMPTY) {
-      Entry<Integer, Integer> wrongPosCar = misplacedCars.entrySet().iterator().next();
-      moves.add(new Move(emptyBox, wrongPosCar.getValue()));
-      return misplacedCars.replace(wrongPosCar.getKey(), emptyBox);
-    }
-
-    return emptyBox;
+    Entry<Integer, Integer> wrongPosCar = misplacedCars.entrySet().iterator().next();
+    moves.add(new Move(wrongPosCar.getValue(), emptyBox));
+    return misplacedCars.replace(wrongPosCar.getKey(), emptyBox);
   }
 
   /*
@@ -129,7 +127,7 @@ public class ParkingLot {
       List<Move> moves) {
     int currentCar = target[emptyBox];
     if (misplacedCars.containsKey(currentCar)) {
-      moves.add(new Move(emptyBox, misplacedCars.get(currentCar)));
+      moves.add(new Move(misplacedCars.get(currentCar), emptyBox));
       return misplacedCars.remove(currentCar);
     }
 
@@ -141,7 +139,7 @@ public class ParkingLot {
     private final int source;
     private final int target;
 
-    private Move(int target, int source) {
+    private Move(int source, int target) {
       this.source = source;
       this.target = target;
     }
