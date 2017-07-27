@@ -28,9 +28,9 @@ public class ParkingLotTest {
   @Test
   public void testExample() {
     String res =
-        "move from 2 to 1\n"
-            + "move from 1 to 0\n"
-            + "move from 0 to 3\n";
+        "move from 1 to 2\n"
+            + "move from 0 to 1\n"
+            + "move from 3 to 0\n";
     int[] source = {1, 2, 0, 3};
     int[] target = {3, 1, 2, 0};
     assertEquals(res, ParkingLot.rearrangeCars(source, target).toString());
@@ -39,10 +39,10 @@ public class ParkingLotTest {
   @Test
   public void testEmptyCorrect() {
     String res =
-        "move from 2 to 0\n"
-            + "move from 0 to 3\n"
-            + "move from 3 to 1\n"
-            + "move from 1 to 2\n";
+        "move from 0 to 2\n"
+            + "move from 3 to 0\n"
+            + "move from 1 to 3\n"
+            + "move from 2 to 1\n";
     int[] source = {1, 2, 0, 3};
     int[] target = {3, 1, 0, 2};
     assertEquals(res, ParkingLot.rearrangeCars(source, target).toString());
@@ -51,19 +51,19 @@ public class ParkingLotTest {
   @Test
   public void testReverse() {
     String res =
-        "move from 0 to 10\n"
-            + "move from 10 to 1\n"
-            + "move from 1 to 9\n"
-            + "move from 9 to 10\n"
-            + "move from 10 to 2\n"
-            + "move from 2 to 8\n"
-            + "move from 8 to 10\n"
-            + "move from 10 to 3\n"
-            + "move from 3 to 7\n"
-            + "move from 7 to 10\n"
-            + "move from 10 to 4\n"
-            + "move from 4 to 6\n"
-            + "move from 6 to 10\n";
+        "move from 10 to 0\n"
+            + "move from 1 to 10\n"
+            + "move from 9 to 1\n"
+            + "move from 10 to 9\n"
+            + "move from 2 to 10\n"
+            + "move from 8 to 2\n"
+            + "move from 10 to 8\n"
+            + "move from 3 to 10\n"
+            + "move from 7 to 3\n"
+            + "move from 10 to 7\n"
+            + "move from 4 to 10\n"
+            + "move from 6 to 4\n"
+            + "move from 10 to 6\n";
     int[] target = IntStream.rangeClosed(0, 10).map(i -> 10 - i).toArray();
     int[] source = IntStream.rangeClosed(0, 10).toArray();
     assertEquals(res, ParkingLot.rearrangeCars(source, target).toString());
@@ -72,16 +72,16 @@ public class ParkingLotTest {
   @Test
   public void testReverseWithEmptyInMiddle() {
     String res =
-        "move from 5 to 4\n"
-            + "move from 4 to 6\n"
-            + "move from 6 to 3\n"
-            + "move from 3 to 7\n"
-            + "move from 7 to 2\n"
-            + "move from 2 to 8\n"
-            + "move from 8 to 1\n"
-            + "move from 1 to 9\n"
-            + "move from 9 to 0\n"
-            + "move from 0 to 10\n";
+        "move from 4 to 5\n"
+            + "move from 6 to 4\n"
+            + "move from 3 to 6\n"
+            + "move from 7 to 3\n"
+            + "move from 2 to 7\n"
+            + "move from 8 to 2\n"
+            + "move from 1 to 8\n"
+            + "move from 9 to 1\n"
+            + "move from 0 to 9\n"
+            + "move from 10 to 0\n";
     int[] source = {1, 2, 3, 4, 5, 0, 6, 7, 8, 9, 10};
     int[] target = IntStream.rangeClosed(0, 10).map(i -> 10 - i).toArray();
     assertEquals(res, ParkingLot.rearrangeCars(source, target).toString());
@@ -90,10 +90,10 @@ public class ParkingLotTest {
   @Test
   public void testZeroCorrectlyPlacedBefore() {
     String res =
-        "move from 2 to 1\n"
-            + "move from 1 to 0\n"
-            + "move from 0 to 3\n"
-            + "move from 3 to 1\n";
+        "move from 1 to 2\n"
+            + "move from 0 to 1\n"
+            + "move from 3 to 0\n"
+            + "move from 1 to 3\n";
     int[] source = {1, 2, 0, 3};
     int[] target = {3, 0, 2, 1};
     assertEquals(res, ParkingLot.rearrangeCars(source, target).toString());
@@ -102,16 +102,16 @@ public class ParkingLotTest {
   @Test
   public void testZeroCorrectlyPlacedBeforeAndReverse() {
     String res =
-        "move from 2 to 1\n"
-            + "move from 1 to 0\n"
-            + "move from 0 to 3\n"
-            + "move from 3 to 1\n"
-            + "move from 1 to 4\n"
-            + "move from 4 to 7\n"
-            + "move from 7 to 1\n"
-            + "move from 1 to 5\n"
-            + "move from 5 to 6\n"
-            + "move from 6 to 1\n";
+        "move from 1 to 2\n"
+            + "move from 0 to 1\n"
+            + "move from 3 to 0\n"
+            + "move from 1 to 3\n"
+            + "move from 4 to 1\n"
+            + "move from 7 to 4\n"
+            + "move from 1 to 7\n"
+            + "move from 5 to 1\n"
+            + "move from 6 to 5\n"
+            + "move from 1 to 6\n";
     int[] source = {1, 2, 0, 3, 5, 6, 7, 8};
     int[] target = {3, 0, 2, 1, 8, 7, 6, 5};
     assertEquals(res, ParkingLot.rearrangeCars(source, target).toString());
@@ -126,9 +126,9 @@ public class ParkingLotTest {
   @Test
   public void testRandomPattern() {
     String res =
-        "move from 2 to 5\n"
-            + "move from 5 to 4\n"
-            + "move from 4 to 9\n";
+        "move from 5 to 2\n"
+            + "move from 4 to 5\n"
+            + "move from 9 to 4\n";
     int[] source = {1, 2, 0, 3, 5, 6, 7, 8, 9, 4};
     int[] target = {1, 2, 6, 3, 4, 5, 7, 8, 9, 0};
     assertEquals(res, ParkingLot.rearrangeCars(source, target).toString());
@@ -137,13 +137,13 @@ public class ParkingLotTest {
   @Test
   public void testSwap() {
     String res =
-        "move from 3 to 0\n"
-            + "move from 0 to 2\n"
-            + "move from 2 to 1\n"
-            + "move from 1 to 3\n"
-            + "move from 3 to 4\n"
-            + "move from 4 to 5\n"
-            + "move from 5 to 3\n";
+        "move from 0 to 3\n"
+            + "move from 2 to 0\n"
+            + "move from 1 to 2\n"
+            + "move from 3 to 1\n"
+            + "move from 4 to 3\n"
+            + "move from 5 to 4\n"
+            + "move from 3 to 5\n";
     int[] source = {1, 2, 3, 0, 4, 5};
     int[] target = {3, 1, 2, 0, 5, 4};
     assertEquals(res, ParkingLot.rearrangeCars(source, target).toString());

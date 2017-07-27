@@ -127,9 +127,10 @@ public class ParkingLot {
   */
   private static int moveEmpty(Map<Integer, Integer> misplacedCars, int[] target, int emptyBox,
       List<Move> moves) {
-    if (misplacedCars.containsKey(target[emptyBox])) {
-      moves.add(new Move(emptyBox, misplacedCars.get(target[emptyBox])));
-      return misplacedCars.remove(target[emptyBox]);
+    int currentCar = target[emptyBox];
+    if (misplacedCars.containsKey(currentCar)) {
+      moves.add(new Move(emptyBox, misplacedCars.get(currentCar)));
+      return misplacedCars.remove(currentCar);
     }
 
     return emptyBox;
@@ -140,7 +141,7 @@ public class ParkingLot {
     private final int source;
     private final int target;
 
-    private Move(int source, int target) {
+    private Move(int target, int source) {
       this.source = source;
       this.target = target;
     }
