@@ -103,7 +103,7 @@ public class AlphabetFinderTest {
   }
 
   @Test
-  public void testCounterExample() {
+  public void testRegression() {
     assertThat(
         AlphabetFinder.findAlphabet(new String[]{"AH", "BG", "CF", "DF", "DG", "EG", "EH"}),
         is(Optional.of(Arrays.asList('A', 'F', 'B', 'G', 'C', 'H', 'D', 'E'))));

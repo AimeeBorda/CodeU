@@ -17,18 +17,25 @@ import java.util.Queue;
 public class AlphabetFinder {
 
   /*
-   * The graph is represented using adjacency List as 1) Alphabet might be infinitely large, 2)
+   * The graph is represented using adjacency List as 1) Alphabet might be unbounded, 2)
    * from example the graph seem to be sparse 3) we do not check the presence of arbitrary edges
-   * but systematically parse through the graph.
+   * but systematically traverse through the graph.
    *
-   * Main Steps: build graph from list of words -> topological sort
+   * Main Steps:
+   *  1. Build partial order graph of characters from word list.
+   *  2. Topological sort to generate a total order.
    *
    * Returns : empty <- if there is a cycle in the words
    *           List<Character> <- the ordered alphabet
    *
    * Time Complexity: O(build) + O(sort)
+   *                : O(n*m*len) + O(|alphabet| + len)
+   *                : O(n*m*len)
    *
-   *
+   * where
+   *    n is the number of words,
+   *    len is the len of words,
+   *    m is the fan-out of words
    */
   public static Optional<List<Character>> findAlphabet(final String[] words) {
 
@@ -36,51 +43,20 @@ public class AlphabetFinder {
       return Optional.empty();
     }
 
-    Graph graph = buildGraph(words);
-    return topologicalSort(graph);
+    return buildGraph(words).topologicalSort();
   }
 
-  /*
-   * Topological Sort: Iteratively, vertices with no incoming edges are
-   * 1. added to the alphabet,
-   * 2. we remove their outgoing transitions and
-   * 3. add vertices with no incoming transitions to the queue
-   *
-   * Time Complexity:  O(|V| + |E|) in this case
-   * V is the alphabet and
-   * E is the length of words in the array words[]
-   */
-  private static Optional<List<Character>> topologicalSort(final Graph graph) {
-    List<Character> res = new ArrayList<>();
-    int visited = 0;
-    List<Node> roots = new ArrayList<>(graph.roots);
 
-    while (!roots.isEmpty()) {
-      Node next = roots.remove(0); //O(1)
-      res.add(next.c); //O(n)
-      visited++; //O(1)
-      for (Node n : next.outgoing) { //O(fan-out/ E)
-        n.inDegree--; //O(1)
-        if (n.inDegree == 0) {
-          roots.add(n); //O(n)
-        }
-      }
-
-    }
-
-    //if not all the edges have been visited then there is a cycle.
-    return visited == graph.vertices ? Optional.of(res) : Optional.empty();
-  }
 
   /*
    * The while loop iteratively groups the word according to the first character.
    * The list of first characters are inserted into the graph and each group of suffixes
    * is added to the queue to infer its partial orders.
    *
-   * Time Complexity: O(nml)
+   * Time Complexity: O(n*m*len)
    * where
    *    n is the number of words,
-   *    l is the len of words,
+   *    len is the len of words,
    *    m is the fan-out of words
    */
   private static Graph buildGraph(String[] words) {
@@ -90,7 +66,7 @@ public class AlphabetFinder {
 
     queue.add(Arrays.asList(words)); //O(1) as queue is empty
 
-    while (!queue.isEmpty()) { // O(l) where l is the len of words
+    while (!queue.isEmpty()) { // O(len) where len is the len of words
       List<String> group = queue.poll(); //O(1)
       group.removeIf(String::isEmpty); // O(n) where n is the number of words
 
@@ -123,10 +99,7 @@ public class AlphabetFinder {
     Node prev = null;
     for (Character c : partialOrder) {
 
-      if (!nodes.containsKey(c)) {
-        nodes.put(c, new Node(c));
-      }
-      Node temp = nodes.get(c);
+      Node temp = nodes.computeIfAbsent(c, Node::new);
 
       //if not first character or the same character from the prev node
       if (prev != null && prev.c != temp.c) {
@@ -161,6 +134,42 @@ public class AlphabetFinder {
     public Graph(List<Node> roots, int vertices) {
       this.roots = roots;
       this.vertices = vertices;
+    }
+
+    /*
+   * Topological Sort based on Kahn's algorithm.
+   *
+   * Iteratively, vertices with no incoming edges are
+   * 1. added to the alphabet,
+   * 2. we remove their outgoing transitions and
+   * 3. add vertices with no incoming transitions to the queue
+   *
+   * Time Complexity:  O(|V| + |E|) in this case
+   * V is the alphabet and
+   * E is the length of words in the array words[]
+   */
+    private Optional<List<Character>> topologicalSort() {
+      List<Character> res = new ArrayList<>();
+      int visited = 0;
+
+      while (!roots.isEmpty()) {
+        Node next = roots.remove(0); //O(1)
+        res.add(next.c); //O(n)
+        visited++; //O(1)
+        for (Node n : next.outgoing) { //O(fan-out/ E)
+          removeEdge(n);
+        }
+      }
+
+      //if not all the edges have been visited then there is a cycle.
+      return visited == this.vertices ? Optional.of(res) : Optional.empty();
+    }
+
+    private void removeEdge(Node node) {
+      node.inDegree--; //O(1)
+      if (node.inDegree == 0) {
+        roots.add(node); //O(n)
+      }
     }
   }
 }
