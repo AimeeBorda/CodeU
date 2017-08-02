@@ -33,7 +33,11 @@ public class Graph {
   public Optional<List<Character>> topologicalSort() {
     List<Character> res = new ArrayList<>();
     int visited = 0;
-    List<Node> roots = nodes.values().stream().filter(n -> n.inDegree == 0).map(Node::clone)
+    List<Node> roots = nodes
+        .values()
+        .stream()
+        .filter(n -> n.inDegree == 0)
+        .map(Node::clone)
         .collect(toList());
 
     while (!roots.isEmpty()) {
