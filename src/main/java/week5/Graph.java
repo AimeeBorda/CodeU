@@ -53,8 +53,10 @@ public class Graph {
   }
 
 
-  public void addEdge(char from, char to) {
-    nodes.get(from).addEdge(nodes.get(to));
+  public void addEdge(char[] edge) {
+    if (edge != null && edge.length == 2) {
+      nodes.get(edge[0]).addEdge(nodes.get(edge[1]));
+    }
   }
 
   private class Node {

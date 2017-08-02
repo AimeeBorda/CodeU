@@ -66,17 +66,16 @@ public class AlphabetFinder {
       String word1 = words[i - 1];
       String word2 = words[i];
 
-      getIndexFor(word1, word2)
-          .ifPresent(index -> graph.addEdge(word1.charAt(index), word2.charAt(index)));
+      getEdgeFrom(word1, word2).ifPresent(chars -> graph.addEdge(chars));
     }
 
     return graph;
   }
 
-  private static Optional<Integer> getIndexFor(String word1, String word2) {
+  private static Optional<char[]> getEdgeFrom(String word1, String word2) {
     for (int i = 0; i < Math.min(word1.length(), word2.length()); i++) {
       if (word1.charAt(i) != word2.charAt(i)) {
-        return Optional.of(i);
+        return Optional.of(new char[]{word1.charAt(i), word2.charAt(i)});
       }
     }
     return Optional.empty();
