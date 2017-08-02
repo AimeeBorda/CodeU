@@ -1,18 +1,15 @@
 package week5;
 
 
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.mapping;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Queue;
+import java.util.function.Function;
 
 public class AlphabetFinder {
 
@@ -47,7 +44,6 @@ public class AlphabetFinder {
   }
 
 
-
   /*
    * The while loop iteratively groups the word according to the first character.
    * The list of first characters are inserted into the graph and each group of suffixes
@@ -61,54 +57,36 @@ public class AlphabetFinder {
    */
   private static Graph buildGraph(String[] words) {
 
-    Map<Character, Node> nodes = new HashMap<>();
-    Queue<List<String>> queue = new LinkedList<>();
+    Map<Character, Node> nodes =
+        Arrays.stream(words)
+            .flatMapToInt(String::chars)
+            .distinct()
+            .mapToObj(s -> (char) s)
+            .collect(toMap(Function.identity(), Node::new));
 
-    queue.add(Arrays.asList(words)); //O(1) as queue is empty
+    Graph graph = new Graph(nodes);
 
-    while (!queue.isEmpty()) { // O(len) where len is the len of words
-      List<String> group = queue.poll(); //O(1)
-      group.removeIf(String::isEmpty); // O(n) where n is the number of words
+    for (int i = 1; i < words.length; i++) {
+      String word1 = words[i - 1];
+      String word2 = words[i];
 
-      queue.addAll(
-          group
-              .stream()
-              .collect(groupingBy(
-                  s -> s.charAt(0),
-                  mapping(s -> s.substring(1), toList()))).values());
-
-      updateGraph(group.stream().map(s -> s.charAt(0)).collect(toList()), nodes); //O(nm)
-
+      getIndex(word1, word2).ifPresent(index -> {
+        graph.addEdge(word1.charAt(index), word2.charAt(index));
+      });
     }
 
-    return new Graph(
-        nodes.values().stream().filter(n -> n.inDegree == 0).collect(toList()),
-        nodes.size()
-    );
+    return graph;
   }
 
-  /*
-   * This method updates the graph with the partialOrder passed as a parameter
-   *
-   * Time Complexity: O(nm)
-   *  where n is the length of the partial order and
-   *        m is fan out for nodes
-   *  Space Complexity: O(1)
-   */
-  private static void updateGraph(List<Character> partialOrder, Map<Character, Node> nodes) {
-    Node prev = null;
-    for (Character c : partialOrder) {
-
-      Node temp = nodes.computeIfAbsent(c, Node::new);
-
-      //if not first character or the same character from the prev node
-      if (prev != null && prev.c != temp.c) {
-        prev.addEdge(temp);
-      }
-
-      prev = temp;
+  private static Optional<Integer> getIndex(String word1, String word2) {
+    int index = 0;
+    while (index < word1.length() && index < word2.length() && word1.charAt(index) == word2
+        .charAt(index)) {
+      index++;
     }
+    return index < word1.length() && index < word2.length() ? Optional.of(index) : Optional.empty();
   }
+
 
   private static class Node {
 
@@ -128,13 +106,12 @@ public class AlphabetFinder {
 
   private static class Graph {
 
-    final int vertices;
-    final List<Node> roots;
+    Map<Character, Node> nodes;
 
-    public Graph(List<Node> roots, int vertices) {
-      this.roots = roots;
-      this.vertices = vertices;
+    public Graph(Map<Character, Node> nodes) {
+      this.nodes = nodes;
     }
+
 
     /*
    * Topological Sort based on Kahn's algorithm.
@@ -151,25 +128,27 @@ public class AlphabetFinder {
     private Optional<List<Character>> topologicalSort() {
       List<Character> res = new ArrayList<>();
       int visited = 0;
+      List<Node> roots = nodes.values().stream().filter(n -> n.inDegree == 0).collect(toList());
 
       while (!roots.isEmpty()) {
         Node next = roots.remove(0); //O(1)
         res.add(next.c); //O(n)
         visited++; //O(1)
         for (Node n : next.outgoing) { //O(fan-out/ E)
-          removeEdge(n);
+          n.inDegree--; //O(1)
+          if (n.inDegree == 0) {
+            roots.add(n); //O(n)
+          }
         }
       }
 
       //if not all the edges have been visited then there is a cycle.
-      return visited == this.vertices ? Optional.of(res) : Optional.empty();
+      return visited == this.nodes.size() ? Optional.of(res) : Optional.empty();
     }
 
-    private void removeEdge(Node node) {
-      node.inDegree--; //O(1)
-      if (node.inDegree == 0) {
-        roots.add(node); //O(n)
-      }
+
+    public void addEdge(char from, char to) {
+      nodes.get(from).addEdge(nodes.get(to));
     }
   }
 }
