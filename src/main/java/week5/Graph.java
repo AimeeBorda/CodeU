@@ -57,10 +57,11 @@ public class Graph {
   }
 
 
-  public void addEdge(char[] edge) {
-    if (edge != null && edge.length == 2) {
-      nodes.get(edge[0]).addEdge(nodes.get(edge[1]));
-    }
+  public void addEdge(char from, char to) {
+    nodes.putIfAbsent(from, new Node(from));
+    nodes.putIfAbsent(to, new Node(to));
+
+    nodes.get(from).addEdge(nodes.get(to));
   }
 
   private class Node {
